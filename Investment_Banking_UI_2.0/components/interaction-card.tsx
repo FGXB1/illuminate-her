@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, Fragment } from "react"
-import { Building2, User, Zap, X } from "lucide-react"
+import { Briefcase, User, Landmark, X } from "lucide-react"
 import type { GameNode, NodeType } from "@/lib/game-data"
 import { GlossaryTooltip } from "./glossary-tooltip"
 
@@ -14,34 +14,34 @@ interface InteractionCardProps {
 function NodeTypeIcon({ type }: { type: NodeType }) {
   const iconClass = "w-6 h-6"
   switch (type) {
-    case "character":
+    case "investor":
       return <User className={iconClass} />
+    case "company":
+      return <Briefcase className={iconClass} />
     case "building":
-      return <Building2 className={iconClass} />
-    case "event":
-      return <Zap className={iconClass} />
+      return <Landmark className={iconClass} />
   }
 }
 
 function typeLabel(type: NodeType) {
   switch (type) {
-    case "character":
-      return "Character"
+    case "investor":
+      return "Investor"
+    case "company":
+      return "Company"
     case "building":
-      return "Location"
-    case "event":
-      return "Event"
+      return "Marketplace"
   }
 }
 
 function typeColor(type: NodeType) {
   switch (type) {
-    case "character":
-      return "bg-accent text-accent-foreground"
+    case "investor":
+      return "bg-investor text-investor-foreground"
+    case "company":
+      return "bg-company text-company-foreground"
     case "building":
-      return "bg-primary text-primary-foreground"
-    case "event":
-      return "bg-chart-4 text-card-foreground"
+      return "bg-marketplace text-marketplace-foreground"
   }
 }
 
@@ -128,7 +128,9 @@ export function InteractionCard({ node, onClose, onChoice }: InteractionCardProp
         {/* Header */}
         <div className="flex items-center gap-3 p-4 border-b border-border">
           <span
-            className={`w-10 h-10 rounded-xl flex items-center justify-center ${typeColor(node.type)}`}
+            className={`w-10 h-10 flex items-center justify-center ${
+              node.type === "company" ? "rounded-xl" : "rounded-full"
+            } ${typeColor(node.type)}`}
           >
             <NodeTypeIcon type={node.type} />
           </span>
@@ -157,8 +159,8 @@ export function InteractionCard({ node, onClose, onChoice }: InteractionCardProp
           </p>
 
           {showOutcome && selectedChoice ? (
-            <div className="animate-slide-up rounded-xl bg-accent/10 border border-accent/20 p-3">
-              <span className="block text-xs font-display font-bold text-accent mb-1">
+            <div className="animate-slide-up rounded-xl bg-primary/10 border border-primary/20 p-3">
+              <span className="block text-xs font-display font-bold text-primary mb-1">
                 You chose: {selectedChoice}
               </span>
               <span className="block text-sm text-foreground/80 leading-relaxed">
