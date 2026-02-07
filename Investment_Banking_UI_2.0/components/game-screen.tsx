@@ -53,17 +53,28 @@ export function GameScreen() {
   return (
     <div className="flex flex-col h-dvh max-w-md mx-auto bg-background">
       {/* Top bar */}
-      <header className="shrink-0 flex items-center gap-3 px-4 pt-4 pb-2">
-        <span className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center">
+      <header className="shrink-0 flex items-center gap-3 px-4 pt-4 pb-2 border-b border-border/50">
+        <span className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/20">
           <Landmark className="w-5 h-5 text-primary-foreground" />
         </span>
         <div className="flex-1 min-w-0">
           <h1 className="font-display font-bold text-foreground text-sm leading-tight">
             Walk Through Wall Street
           </h1>
-          <p className="text-[10px] text-muted-foreground leading-tight">
-            Investment Banking Explorer
-          </p>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-investor" />
+              <span className="text-[8px] text-muted-foreground">Investors</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-sm bg-company" />
+              <span className="text-[8px] text-muted-foreground">Companies</span>
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-marketplace" />
+              <span className="text-[8px] text-muted-foreground">Markets</span>
+            </span>
+          </div>
         </div>
         {completedNodes.size > 0 && (
           <button

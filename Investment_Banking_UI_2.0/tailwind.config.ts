@@ -44,6 +44,18 @@ const config: Config = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        investor: {
+          DEFAULT: 'hsl(var(--investor))',
+          foreground: 'hsl(var(--investor-foreground))',
+        },
+        company: {
+          DEFAULT: 'hsl(var(--company))',
+          foreground: 'hsl(var(--company-foreground))',
+        },
+        marketplace: {
+          DEFAULT: 'hsl(var(--marketplace))',
+          foreground: 'hsl(var(--marketplace-foreground))',
+        },
         chart: {
           '1': 'hsl(var(--chart-1))',
           '2': 'hsl(var(--chart-2))',

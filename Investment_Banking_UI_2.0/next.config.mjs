@@ -11,7 +11,6 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Use this directory as the project root (avoids wrong workspace detection)
   turbopack: {
     root: __dirname,
   },
