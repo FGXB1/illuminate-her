@@ -61,6 +61,13 @@ const config: Config = {
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
         },
+        music: {
+          light: '#C1C1C1',
+          dark: '#2C4251',
+          primary: '#D16666',
+          secondary: '#550C18',
+          accent: '#240115',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
