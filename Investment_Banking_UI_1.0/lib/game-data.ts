@@ -7,6 +7,7 @@ export interface GameNode {
   description: string
   choices: { label: string; outcome: string }[]
   glossaryTerms?: { term: string; definition: string }[]
+  companyName?: string // For Gemini API lookup
 }
 
 export const gameNodes: GameNode[] = [
@@ -15,7 +16,7 @@ export const gameNodes: GameNode[] = [
     label: "The Intern",
     type: "character",
     description:
-      "You meet Alex, a summer intern at a top bank. They offer to show you the trading floor.",
+      "You meet Alex, a summer intern at JPMorgan Chase. They offer to show you the trading floor.",
     choices: [
       { label: "Follow Alex", outcome: "You gain insight into daily trading operations." },
       { label: "Explore alone", outcome: "You discover the research department." },
@@ -28,10 +29,11 @@ export const gameNodes: GameNode[] = [
   },
   {
     id: 2,
-    label: "NYSE Building",
+    label: "JPMorgan Chase",
     type: "building",
+    companyName: "JPMorgan Chase",
     description:
-      "The iconic New York Stock Exchange towers before you. A bell rings to signal the market open.",
+      "The massive headquarters of the largest bank in the US. A bell rings to signal the market open.",
     choices: [
       { label: "Watch the bell", outcome: "You learn about market opening rituals." },
       { label: "Check the ticker", outcome: "You see live stock prices scrolling by." },
@@ -74,8 +76,9 @@ export const gameNodes: GameNode[] = [
   },
   {
     id: 5,
-    label: "Goldman HQ",
+    label: "Goldman Sachs",
     type: "building",
+    companyName: "Goldman Sachs",
     description:
       "You stand before one of Wall Street's most famous firms. A recruiter offers you a tour.",
     choices: [
@@ -118,10 +121,11 @@ export const gameNodes: GameNode[] = [
   },
   {
     id: 8,
-    label: "Fed Reserve",
+    label: "Citigroup Center",
     type: "building",
+    companyName: "Citigroup",
     description:
-      "The Federal Reserve Bank looms ahead. Interest rate decisions are shaping the economy.",
+      "The Citigroup building. Interest rate decisions are shaping the economy.",
     choices: [
       { label: "Study rates", outcome: "You learn how interest rates affect markets." },
       { label: "Check the vault", outcome: "You discover where gold reserves are stored." },
@@ -152,7 +156,7 @@ export const gameNodes: GameNode[] = [
     label: "The Trader",
     type: "character",
     description:
-      "Rashid works the equity desk, making split-second decisions. He challenges you to a mock trade.",
+      "Rashid works the equity desk at Morgan Stanley, making split-second decisions. He challenges you to a mock trade.",
     choices: [
       { label: "Accept the trade", outcome: "You learn the basics of buying and selling stocks." },
       { label: "Watch first", outcome: "You observe how professional traders read the market." },
@@ -163,10 +167,11 @@ export const gameNodes: GameNode[] = [
   },
   {
     id: 11,
-    label: "Wall St. HQ",
+    label: "Morgan Stanley HQ",
     type: "building",
+    companyName: "Morgan Stanley",
     description:
-      "You arrive at the legendary Wall Street sign. This is the heart of global finance.",
+      "You arrive at the Morgan Stanley headquarters. This is the heart of global finance.",
     choices: [
       { label: "Take a photo", outcome: "You capture a moment at the center of the financial world." },
       { label: "Reflect on the journey", outcome: "You think about everything you've learned." },
