@@ -3,9 +3,8 @@
 import { useGameLoop } from "@/hooks/useGameLoop";
 import GameCanvas from "@/components/GameCanvas";
 import Dashboard from "@/components/Dashboard";
-import PitStopModal from "@/components/PitStopModal";
-import { CarPart } from "@/components/CarModel";
-import { PitStopAction } from "@/lib/types";
+import PitStopOverlay from "@/components/PitStopOverlay";
+import { CarPart } from "@/lib/carConfig";
 import { useState } from "react";
 import { Trophy, RefreshCcw, Clock, Gauge, Activity } from "lucide-react";
 
@@ -31,16 +30,11 @@ export default function Home() {
   } = useGameLoop();
 
   const [showIntro, setShowIntro] = useState(true);
+  const [selectedPart, setSelectedPart] = useState<CarPart | null>(null);
 
   const handlePartClick = (part: CarPart) => {
     if (gameState === 'pit_stop') {
-      if (part.includes('tire')) {
-        applyPitStopAction('change_tires');
-      } else if (part === 'engine') {
-        applyPitStopAction('fix_engine');
-      } else if (part === 'chassis') {
-        applyPitStopAction('refuel'); // Simple mapping
-      }
+      setSelectedPart(part);
     } else {
         // Maybe show info toast?
         console.log(`Clicked ${part} during race`);
@@ -54,6 +48,12 @@ export default function Home() {
 
   const handleRestart = () => {
     resetRace();
+    setSelectedPart(null);
+  };
+
+  const handleResumeRace = () => {
+      setSelectedPart(null);
+      startRace();
   };
 
   // Calculate Average Speed
@@ -77,6 +77,7 @@ export default function Home() {
             stats={stats}
             distance={distance}
             onPartClick={handlePartClick}
+            selectedPart={selectedPart}
         />
       </div>
 
@@ -87,12 +88,14 @@ export default function Home() {
         onPitStop={enterPitStop}
       />
 
-      {/* Pit Stop Modal */}
+      {/* Pit Stop Overlay */}
       {gameState === 'pit_stop' && !showIntro && (
-        <PitStopModal
+        <PitStopOverlay
             stats={stats}
             onAction={applyPitStopAction}
-            onResume={startRace}
+            onResume={handleResumeRace}
+            selectedPart={selectedPart}
+            onBack={() => setSelectedPart(null)}
         />
       )}
 
@@ -140,7 +143,7 @@ export default function Home() {
                         <span className="text-neutral-400 text-xs uppercase tracking-widest mb-1">Pit Stops</span>
                         <span className="font-mono font-bold text-3xl flex items-center gap-2">
                              <Activity size={20} className="text-red-400" />
-                             {stats.pitStops}
+                             {stats.pitStops.length}
                         </span>
                     </div>
                      <div className="flex flex-col">
