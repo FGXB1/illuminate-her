@@ -1,14 +1,23 @@
 "use client"
 
-import { useState, Fragment } from "react"
-import { Briefcase, User, Landmark, X } from "lucide-react"
+import { useState, Fragment, useEffect } from "react"
+import { Building2, User, Zap, X, TrendingUp, DollarSign, MapPin } from "lucide-react"
 import type { GameNode, NodeType } from "@/lib/game-data"
 import { GlossaryTooltip } from "./glossary-tooltip"
+import { getCompanyData } from "@/app/actions"
 
 interface InteractionCardProps {
   node: GameNode
   onClose: () => void
   onChoice: (outcome: string) => void
+}
+
+interface CompanyData {
+  capital: string;
+  ceo: string;
+  stockPrice: string;
+  headquarters: string;
+  description: string;
 }
 
 function NodeTypeIcon({ type }: { type: NodeType }) {
@@ -101,6 +110,19 @@ function highlightGlossary(
 export function InteractionCard({ node, onClose, onChoice }: InteractionCardProps) {
   const [selectedChoice, setSelectedChoice] = useState<string | null>(null)
   const [showOutcome, setShowOutcome] = useState(false)
+  const [companyData, setCompanyData] = useState<CompanyData | null>(null)
+  const [loadingData, setLoadingData] = useState(false)
+
+  // Fetch company data if applicable
+  useEffect(() => {
+    if (node.companyName) {
+        setLoadingData(true)
+        getCompanyData(node.companyName)
+            .then(data => setCompanyData(data))
+            .catch(err => console.error(err))
+            .finally(() => setLoadingData(false))
+    }
+  }, [node.companyName])
 
   function handleChoice(label: string, outcome: string) {
     setSelectedChoice(label)
@@ -121,12 +143,12 @@ export function InteractionCard({ node, onClose, onChoice }: InteractionCardProp
         aria-label="Close interaction"
       />
       <div
-        className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0 rounded-2xl bg-card border border-border shadow-2xl shadow-background/60 animate-slide-up overflow-hidden"
+        className="relative w-full max-w-sm mx-4 mb-4 sm:mb-0 rounded-2xl bg-card border border-border shadow-2xl shadow-background/60 animate-slide-up overflow-hidden max-h-[85vh] flex flex-col"
         role="dialog"
         aria-label={node.label}
       >
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-border">
+        <div className="flex items-center gap-3 p-4 border-b border-border shrink-0">
           <span
             className={`w-10 h-10 flex items-center justify-center ${
               node.type === "company" ? "rounded-xl" : "rounded-full"
@@ -152,12 +174,51 @@ export function InteractionCard({ node, onClose, onChoice }: InteractionCardProp
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-4">
+        <div className="overflow-y-auto flex-1 p-4">
+            {/* Description */}
           <p className="text-sm leading-relaxed text-foreground/85 mb-4">
             {highlightGlossary(node.description, node.glossaryTerms)}
           </p>
 
+          {/* Company Data Section */}
+          {node.companyName && (
+            <div className="mb-4 rounded-xl bg-secondary/50 border border-border p-3 space-y-2">
+                {loadingData ? (
+                    <div className="flex items-center justify-center py-4">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    </div>
+                ) : companyData ? (
+                    <>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                             <div className="flex flex-col gap-1">
+                                <span className="text-muted-foreground flex items-center gap-1"><DollarSign className="w-3 h-3"/> Capital/Assets</span>
+                                <span className="font-bold text-foreground">{companyData.capital}</span>
+                             </div>
+                             <div className="flex flex-col gap-1">
+                                <span className="text-muted-foreground flex items-center gap-1"><TrendingUp className="w-3 h-3"/> Stock Price</span>
+                                <span className="font-bold text-green-600">{companyData.stockPrice}</span>
+                             </div>
+                        </div>
+                         <div className="flex flex-col gap-1 text-xs pt-1 border-t border-border/50">
+                             <span className="text-muted-foreground flex items-center gap-1"><User className="w-3 h-3"/> CEO</span>
+                             <span className="font-medium text-foreground">{companyData.ceo}</span>
+                         </div>
+                         <div className="flex flex-col gap-1 text-xs">
+                             <span className="text-muted-foreground flex items-center gap-1"><MapPin className="w-3 h-3"/> HQ</span>
+                             <span className="font-medium text-foreground">{companyData.headquarters}</span>
+                         </div>
+                         <p className="text-[10px] text-muted-foreground pt-1 italic border-t border-border/50 mt-1">
+                             {companyData.description}
+                         </p>
+                         <p className="text-[9px] text-muted-foreground/50 text-right">Powered by Gemini</p>
+                    </>
+                ) : (
+                    <p className="text-xs text-muted-foreground">Data unavailable</p>
+                )}
+            </div>
+          )}
+
+          {/* Choices / Outcome */}
           {showOutcome && selectedChoice ? (
             <div className="animate-slide-up rounded-xl bg-primary/10 border border-primary/20 p-3">
               <span className="block text-xs font-display font-bold text-primary mb-1">
@@ -185,7 +246,7 @@ export function InteractionCard({ node, onClose, onChoice }: InteractionCardProp
 
         {/* Glossary hint */}
         {node.glossaryTerms && node.glossaryTerms.length > 0 && !showOutcome && (
-          <div className="px-4 pb-3">
+          <div className="px-4 pb-3 pt-0 shrink-0">
             <p className="text-[10px] text-muted-foreground">
               Tap highlighted words for definitions
             </p>
