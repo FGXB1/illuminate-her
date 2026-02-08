@@ -1,12 +1,10 @@
 # 3D Car Model
 
-Place your GLTF/GLB model file here.
+The application expects a GLTF model at:
+`public/illuminate-her/2020_honda_nsx_na1_lbworks/scene.gltf`
 
-The application expects a file named `f1_car.glb`.
+If this file is missing, the game will fallback to a procedural blocky car.
 
-If you have a different file name, update `components/CarModel.tsx` accordingly.
-
-The model should be centered at origin and scaled appropriately (approx 5m length).
-The car should face +Z or -Z (code rotates it 180 degrees assuming standard orientation).
-
-If the model is missing, the game will fallback to a procedural blocky car.
+To use a different model:
+1. Place your GLB/GLTF file in the `public` folder.
+2. Update the `useGLTF` path in `components/CarModel.tsx`.

@@ -213,7 +213,7 @@ export function ProceduralCar({ onPartClick, isRacing = false }: CarModelProps) 
 // ------------------------------------------------------------------
 
 export default function CarModel({ isRacing }: CarModelProps) {
-  const { scene } = useGLTF('/models/f1_car.glb');
+  const { scene } = useGLTF('/illuminate-her/2020_honda_nsx_na1_lbworks/scene.gltf');
   const groupRef = useRef<Group>(null);
 
   useFrame((state) => {
@@ -225,10 +225,10 @@ export default function CarModel({ isRacing }: CarModelProps) {
 
   return (
     <group ref={groupRef} dispose={null}>
-        {/* Scale might need adjustment based on the model. F1 cars are about 5m long.
+        {/* Scale might need adjustment based on the model.
             The procedural car was approx 4.5 units long.
             We'll assume the GLB needs appropriate scaling.
-            Standard GLTF is meters. If model is in meters, scale 1 is fine.
+            Updated scale for NSX model.
         */}
         <primitive object={scene} scale={1.5} rotation={[0, Math.PI, 0]} />
     </group>
