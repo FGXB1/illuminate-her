@@ -8,25 +8,26 @@ import * as THREE from 'three';
 import { cn } from '@/lib/utils';
 
 // Mapping from Tailwind classes/names to Hex colors for Three.js
+// Strict Palette: C1C1C1, 2C4251, D16666, 550C18, 240115
 const trackColors: { [key: string]: string } = {
-  kick: '#D16666',   // music-primary
-  snare: '#550C18',  // music-secondary (maybe brighten for neon) -> #801224
-  hihat: '#2C4251',  // music-accent -> #4A6D88
-  clap: '#240115',   // music-dark -> #48022A
-  synth: '#6366F1',  // indigo-500
-  piano: '#3B82F6',  // blue-500
-  bass: '#581C87',   // purple-900 -> #7E22CE
+  kick: '#D16666',   // Red
+  snare: '#550C18',  // Dark Red
+  hihat: '#C1C1C1',  // Light Grey
+  clap: '#2C4251',   // Dark Blue
+  synth: '#2C4251',  // Dark Blue (mapped to palette)
+  piano: '#C1C1C1',  // Light Grey (mapped to palette)
+  bass: '#240115',   // Dark Purple (mapped to palette)
 };
 
-// Brighter emissive versions
+// Brighter emissive versions for Bloom
 const trackEmissive: { [key: string]: string } = {
-  kick: '#FF8888',
-  snare: '#FF2244',
-  hihat: '#6699CC',
-  clap: '#880044',
-  synth: '#8888FF',
-  piano: '#66AAFF',
-  bass: '#AA44FF',
+  kick: '#FF4444',   // Bright Red
+  snare: '#FF0033',  // Bright Red/Pink
+  hihat: '#FFFFFF',  // White
+  clap: '#4488AA',   // Bright Blue
+  synth: '#66AACC',  // Bright Cyan/Blue
+  piano: '#FFFFFF',  // White
+  bass: '#880044',   // Bright Purple/Pink
 };
 
 const trackNames: { [key: string]: string } = {
@@ -123,16 +124,23 @@ function StepBox({
         castShadow
         receiveShadow
         >
-        <meshStandardMaterial
-            color={materialColor}
-            emissive={materialEmissive}
-            emissiveIntensity={materialEmissiveIntensity}
-            transparent
-            opacity={materialOpacity}
-            roughness={0.1}
-            metalness={0.8}
-            toneMapped={false} // Important for bloom
-        />
+        {isActive ? (
+            <meshBasicMaterial
+                color={materialEmissive} // Use brighter emissive color for neon look
+                toneMapped={false}
+            />
+        ) : (
+            <meshStandardMaterial
+                color={materialColor}
+                emissive={materialEmissive}
+                emissiveIntensity={materialEmissiveIntensity}
+                transparent
+                opacity={materialOpacity}
+                roughness={0.2}
+                metalness={0.1}
+                toneMapped={false}
+            />
+        )}
     </RoundedBox>
   );
 }
@@ -208,9 +216,9 @@ function Scene({
 
   return (
     <>
-      <ambientLight intensity={0.2} />
-      <pointLight position={[10, 10, 10]} intensity={1} />
-      <pointLight position={[-10, -10, -10]} intensity={0.5} color="#4400ff" />
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 20, 15]} intensity={2} color="#ffffff" />
+      <pointLight position={[-10, -10, -10]} intensity={5} color="#4400ff" distance={30} decay={1} />
 
       {/* Grid */}
       <group position={[0, 0, 0]}>
@@ -281,7 +289,7 @@ function Scene({
 
       {/* Post Processing */}
       <EffectComposer disableNormalPass>
-        <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.6} />
+        <Bloom luminanceThreshold={0.4} mipmapBlur intensity={2.0} radius={0.6} />
       </EffectComposer>
     </>
   );

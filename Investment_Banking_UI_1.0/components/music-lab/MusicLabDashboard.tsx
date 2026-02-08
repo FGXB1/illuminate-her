@@ -126,10 +126,12 @@ export default function MusicLabDashboard() {
   };
 
   const handleToggleStep = (track: string, step: number) => {
-    const newTracks = { ...tracks };
-    newTracks[track] = [...tracks[track]];
-    newTracks[track][step] = !newTracks[track][step];
-    setTracks(newTracks);
+    setTracks(prevTracks => {
+      const newTracks = { ...prevTracks };
+      newTracks[track] = [...prevTracks[track]];
+      newTracks[track][step] = !newTracks[track][step];
+      return newTracks;
+    });
   };
 
   const handleClear = () => {
