@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { AudioEngine } from '@/lib/audio-engine';
-import { Sequencer } from './Sequencer';
+import { Sequencer3D } from './Sequencer3D';
 import { Controls } from './Controls';
 import { Effects } from './Effects';
 import { Visualizer } from './Visualizer';
@@ -231,7 +231,7 @@ export default function MusicLabDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Main Sequencer Area */}
           <div className="lg:col-span-8 space-y-6">
-            <Sequencer
+            <Sequencer3D
               tracks={tracks}
               currentStep={currentStep}
               onToggleStep={handleToggleStep}
