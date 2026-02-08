@@ -6,7 +6,8 @@ import Dashboard from "@/components/Dashboard";
 import PitStopOverlay from "@/components/PitStopOverlay";
 import { CarPart } from "@/components/CarModel";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Trophy, RefreshCcw, Clock, Gauge, Activity, AlertTriangle, X } from "lucide-react";
+import { Trophy, RefreshCcw, Clock, Gauge, Activity, AlertTriangle, X, Map } from "lucide-react";
+import CareerRoadmap from "@/components/CareerRoadmap";
 
 function formatTime(ms: number) {
   if (!ms) return "0:00.000";
@@ -42,6 +43,7 @@ export default function Home() {
   const [funFactText, setFunFactText] = useState("");
   const [funFactSource, setFunFactSource] = useState<"gemini" | "fallback">("fallback");
   const [funFactLoading, setFunFactLoading] = useState(false);
+  const [showCareerRoadmap, setShowCareerRoadmap] = useState(false);
   const pitStopCountRef = useRef(0);
 
   const fetchFunFact = useCallback(async () => {
@@ -102,6 +104,7 @@ export default function Home() {
     setTutorialShown(false);
     setShowTutorial(false);
     setShowFunFact(false);
+    setShowCareerRoadmap(false);
     resetRace();
   };
 
@@ -358,81 +361,101 @@ export default function Home() {
       )}
 
       {/* Finished Overlay */}
-      {gameState === 'finished' && (
-         <div className="absolute inset-0 z-50 flex flex-col items-center justify-center backdrop-blur-md" style={{ backgroundColor: "rgba(36,1,21,0.92)" }}>
-            <Trophy size={80} className="mb-6 animate-bounce" style={{ color: "#D16666" }} />
-            <h1 className="text-6xl font-bold mb-4 text-white">RACE FINISHED</h1>
+      {gameState === 'finished' && !showCareerRoadmap && (
+         <div className="absolute inset-0 z-50 flex flex-col items-center overflow-y-auto backdrop-blur-md roadmap-scroll" style={{ backgroundColor: "rgba(36,1,21,0.92)" }}>
+            <div className="flex flex-col items-center w-full py-10 px-4">
+              <Trophy size={80} className="mb-6 animate-bounce shrink-0" style={{ color: "#D16666" }} />
+              <h1 className="text-6xl font-bold mb-4 text-white">RACE FINISHED</h1>
 
-            <div className="p-8 rounded-2xl mb-8 min-w-[400px]" style={{ backgroundColor: "rgba(44,66,81,0.35)", border: "1px solid rgba(209,102,102,0.25)" }}>
-                <div className="grid grid-cols-2 gap-6 mb-6">
-                    <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Total Time</span>
-                        <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
-                             <Clock size={20} style={{ color: "#D16666" }} />
-                             {formatTime(totalRaceTime)}
-                        </span>
-                    </div>
-                    <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Avg Speed</span>
-                        <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
-                             <Gauge size={20} style={{ color: "#C1C1C1" }} />
-                             {Math.round(calculatedAvgSpeed)} <span className="text-lg" style={{ color: "rgba(193,193,193,0.5)" }}>KM/H</span>
-                        </span>
-                    </div>
-                     <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Pit Stops</span>
-                        <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
-                             <Activity size={20} style={{ color: "#D16666" }} />
-                             {stats.pitStops}
-                        </span>
-                    </div>
-                     <div className="flex flex-col">
-                        <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Total Laps</span>
-                        <span className="font-mono font-bold text-3xl text-white">
-                             {stats.totalLaps}
-                        </span>
-                    </div>
-                </div>
-
-                <div className="pt-4" style={{ borderTop: "1px solid rgba(209,102,102,0.2)" }}>
-                    <span className="text-xs uppercase tracking-widest mb-3 block" style={{ color: "#C1C1C1" }}>Lap Times</span>
-                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-                        {lapTimes.map((time, i) => (
-                            <div key={i} className="flex justify-between items-center p-2 rounded text-sm" style={{ backgroundColor: "rgba(36,1,21,0.5)" }}>
-                                <span style={{ color: "rgba(193,193,193,0.5)" }}>Lap {i + 1}</span>
-                                <span className="font-mono font-bold text-white">{formatTime(time)}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {pitStopHistory.length > 0 && (
-                  <div className="pt-4 mt-4" style={{ borderTop: "1px solid rgba(209,102,102,0.2)" }}>
-                    <span className="text-xs uppercase tracking-widest mb-3 block" style={{ color: "#C1C1C1" }}>Pit Stop Summary</span>
-                    <div className="space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                      {pitStopHistory.map((stop, i) => (
-                        <div key={i} className="flex justify-between items-center p-2 rounded text-sm" style={{ backgroundColor: "rgba(36,1,21,0.5)" }}>
-                          <span style={{ color: "rgba(193,193,193,0.5)" }}>Lap {stop.lap}</span>
-                          <span className="font-mono text-white">{formatTime(stop.durationMs)}</span>
-                          <span className="text-xs" style={{ color: "#C1C1C1" }}>
-                            {stop.changes.length ? stop.changes.map((c) => c.replace("_", " ")).join(", ") : "Inspection only"}
+              <div className="p-8 rounded-2xl mb-8 min-w-[400px] max-w-[550px] w-full" style={{ backgroundColor: "rgba(44,66,81,0.35)", border: "1px solid rgba(209,102,102,0.25)" }}>
+                  <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Total Time</span>
+                          <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
+                               <Clock size={20} style={{ color: "#D16666" }} />
+                               {formatTime(totalRaceTime)}
                           </span>
-                        </div>
-                      ))}
-                    </div>
+                      </div>
+                      <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Avg Speed</span>
+                          <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
+                               <Gauge size={20} style={{ color: "#C1C1C1" }} />
+                               {Math.round(calculatedAvgSpeed)} <span className="text-lg" style={{ color: "rgba(193,193,193,0.5)" }}>KM/H</span>
+                          </span>
+                      </div>
+                       <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Pit Stops</span>
+                          <span className="font-mono font-bold text-3xl text-white flex items-center gap-2">
+                               <Activity size={20} style={{ color: "#D16666" }} />
+                               {stats.pitStops}
+                          </span>
+                      </div>
+                       <div className="flex flex-col">
+                          <span className="text-xs uppercase tracking-widest mb-1" style={{ color: "#C1C1C1" }}>Total Laps</span>
+                          <span className="font-mono font-bold text-3xl text-white">
+                               {stats.totalLaps}
+                          </span>
+                      </div>
                   </div>
-                )}
-            </div>
 
-            <button
-                onClick={handleRestart}
-                className="font-bold py-3 px-8 rounded-xl uppercase tracking-widest flex items-center gap-2 transition-colors hover:scale-105"
-                style={{ backgroundColor: "#550C18", color: "#C1C1C1", border: "1px solid #D16666" }}
-            >
-                <RefreshCcw size={20} />
-                <span>Race Again</span>
-            </button>
+                  <div className="pt-4" style={{ borderTop: "1px solid rgba(209,102,102,0.2)" }}>
+                      <span className="text-xs uppercase tracking-widest mb-3 block" style={{ color: "#C1C1C1" }}>Lap Times</span>
+                      <div className="space-y-2">
+                          {lapTimes.map((time, i) => (
+                              <div key={i} className="flex justify-between items-center p-2 rounded text-sm" style={{ backgroundColor: "rgba(36,1,21,0.5)" }}>
+                                  <span style={{ color: "rgba(193,193,193,0.5)" }}>Lap {i + 1}</span>
+                                  <span className="font-mono font-bold text-white">{formatTime(time)}</span>
+                              </div>
+                          ))}
+                      </div>
+                  </div>
+
+                  {pitStopHistory.length > 0 && (
+                    <div className="pt-4 mt-4" style={{ borderTop: "1px solid rgba(209,102,102,0.2)" }}>
+                      <span className="text-xs uppercase tracking-widest mb-3 block" style={{ color: "#C1C1C1" }}>Pit Stop Summary</span>
+                      <div className="space-y-2">
+                        {pitStopHistory.map((stop, i) => (
+                          <div key={i} className="flex justify-between items-center p-2 rounded text-sm" style={{ backgroundColor: "rgba(36,1,21,0.5)" }}>
+                            <span style={{ color: "rgba(193,193,193,0.5)" }}>Lap {stop.lap}</span>
+                            <span className="font-mono text-white">{formatTime(stop.durationMs)}</span>
+                            <span className="text-xs" style={{ color: "#C1C1C1" }}>
+                              {stop.changes.length ? stop.changes.map((c) => c.replace("_", " ")).join(", ") : "Inspection only"}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+              </div>
+
+              <div className="flex items-center gap-4 shrink-0 pb-4">
+                <button
+                    onClick={handleRestart}
+                    className="font-bold py-3 px-8 rounded-xl uppercase tracking-widest flex items-center gap-2 transition-all hover:scale-105"
+                    style={{ backgroundColor: "rgba(44,66,81,0.5)", color: "#C1C1C1", border: "1px solid rgba(209,102,102,0.25)" }}
+                >
+                    <RefreshCcw size={20} />
+                    <span>Race Again</span>
+                </button>
+                <button
+                    onClick={() => setShowCareerRoadmap(true)}
+                    className="font-bold py-3 px-8 rounded-xl uppercase tracking-widest flex items-center gap-2 transition-all hover:scale-105"
+                    style={{ backgroundColor: "#550C18", color: "#C1C1C1", border: "1px solid #D16666" }}
+                >
+                    <Map size={20} />
+                    <span>Explore Your Career</span>
+                </button>
+              </div>
+            </div>
         </div>
+      )}
+
+      {/* Career Roadmap Overlay */}
+      {gameState === 'finished' && showCareerRoadmap && (
+        <CareerRoadmap
+          onClose={() => setShowCareerRoadmap(false)}
+          onPlayAgain={handleRestart}
+        />
       )}
     </main>
   );
