@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { GameState, CarStats, INITIAL_STATS, PitStopAction } from '../lib/types';
+import { GameState, CarStats, INITIAL_STATS, PitStopAction, LAP_DISTANCE } from '../lib/types';
 
 const TICK_RATE = 100; // ms
-const LAP_DISTANCE = 5000; // virtual meters
 const BASE_SPEED = 280; // km/h
 
 export function useGameLoop() {

@@ -3,7 +3,7 @@
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, PerspectiveCamera, ContactShadows } from "@react-three/drei";
 import CarModel, { CarPart, ProceduralCar } from "./CarModel";
-import { GameState, CarStats } from "../lib/types";
+import { GameState, CarStats, LAP_DISTANCE } from "../lib/types";
 import { useEffect, useRef, useMemo, Suspense } from "react";
 import * as THREE from "three";
 import React from 'react';
@@ -33,7 +33,6 @@ class ErrorBoundary extends React.Component<{ fallback: React.ReactNode, childre
 }
 
 const TRACK_SCALE = 20; // Scale of the track visual
-const LAP_DISTANCE = 5000; // Meters in simulation
 
 // Shared track points logic
 const TRACK_POINTS = [

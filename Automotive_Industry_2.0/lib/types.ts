@@ -31,3 +31,5 @@ export interface PitStopOption {
   costTime: number; // seconds added to race time
   effect: (stats: CarStats) => CarStats;
 }
+
+export const LAP_DISTANCE = 5000; // Meters in simulation
