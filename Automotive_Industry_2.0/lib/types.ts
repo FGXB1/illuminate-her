@@ -1,4 +1,4 @@
-export type GameState = 'racing' | 'pit_stop' | 'finished';
+export type GameState = 'racing' | 'pit_stop' | 'finished' | 'car_failure';
 
 export interface CarStats {
   speed: number;        // km/h
@@ -8,7 +8,11 @@ export interface CarStats {
   lap: number;
   totalLaps: number;
   position: number;
+  pitStops: number;     // Number of pit stops taken
 }
+
+/** Virtual meters per lap (used for distance/lap calculations). */
+export const LAP_DISTANCE = 1000;
 
 export const INITIAL_STATS: CarStats = {
   speed: 0,
@@ -18,9 +22,17 @@ export const INITIAL_STATS: CarStats = {
   lap: 1,
   totalLaps: 5,
   position: 1,
+  pitStops: 0,
 };
 
 export type PitStopAction = 'change_tires' | 'refuel' | 'fix_engine';
+
+/** Record for one pit stop (lap, duration, actions taken). */
+export interface PitStopRecord {
+  lap: number;
+  durationMs: number;
+  changes: PitStopAction[];
+}
 
 export interface PitStopOption {
   id: PitStopAction;

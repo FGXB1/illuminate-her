@@ -92,3 +92,18 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Visible scrollbar for tutorial panel */
+.pit-guide-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.pit-guide-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.pit-guide-scroll::-webkit-scrollbar-thumb {
+  background: rgba(209, 102, 102, 0.4);
+  border-radius: 3px;
+}
+.pit-guide-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(209, 102, 102, 0.6);
+}
