@@ -1,0 +1,209 @@
+ import { useEffect, useState } from "react";
+  import { useRouter } from "next/navigation";
+  import { ArrowRight } from "lucide-react";
+  import ProceduralGroundBackground from "@/components/ui/demo";
+
+  type KeyFact = {
+    value: string;
+    label: string;
+    detail: string;
+  };
+
+    {
+      value: "10",
+      label: "Global Pioneers",
+      detail: "Discover ten women whose work transformed science, technology, and
+  society.",
+    },
+    {
+      value: "3",
+      label: "Career Labs",
+      detail: "Explore music, automotive, and finance with guided, hands-on
+  experiences.",
+    },
+    {
+      value: "0",
+      label: "Pressure",
+    },
+    {
+      value: "1",
+      label: "Future Letter",
+    },
+  ];
+  function Logo({ size = "md" }: { size?: "sm" | "md" | "lg" }) {
+
+    return (
+      <span className={`font-display font-bold tracking-tight ${sizes[size]}`}>
+        <span className="bg-gradient-to-r from-rose-400 to-pink-500 bg-clip-text text-
+  transparent">HER</span>
+        <span className="text-white">izon</span>
+      </span>
+  }
+
+  function OrbitLogo() {
+    return (
+      <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
+        <div className="absolute inset-0 rounded-full border border-rose-300/45
+  [animation:spin_16s_linear_infinite]" />
+        <div className="absolute inset-[7px] rounded-full border border-cyan-300/30
+  [animation:spin_20s_linear_infinite_reverse]" />
+        <span className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-
+  full bg-rose-300" />
+        <span className="absolute bottom-2 right-2 h-1.5 w-1.5 rounded-full bg-sky-
+  300" />
+        <Logo size="sm" />
+      </div>
+    );
+  }
+
+  export default function LandingPage() {
+    const router = useRouter();
+    const [activeFact, setActiveFact] = useState(0);
+
+    useEffect(() => {
+      const introTimer = window.setTimeout(() => setPhase("main"), 2400);
+      return () => window.clearTimeout(introTimer);
+    }, []);
+
+    useEffect(() => {
+      if (phase !== "main") return;
+        setActiveFact((prev) => (prev + 1) % KEY_FACTS.length);
+      }, 3200);
+      return () => window.clearInterval(factTimer);
+    }, [phase]);
+
+    return (
+      <main className="relative min-h-screen w-full overflow-hidden bg-black text-
+  white">
+        <AnimatePresence>
+          {phase === "intro" && (
+            <motion.section
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            >
+              <ProceduralGroundBackground className="absolute inset-0 z-0 opacity-100" /
+  >
+              <div className="absolute inset-0 z-10 bg-[radial-
+  gradient(circle_at_50%_40%,rgba(255,255,255,0.1),transparent_45%),linear-
+  gradient(to_bottom,rgba(0,0,0,0.78),rgba(0,0,0,0.5)_40%,rgba(0,0,0,0.85))]" />
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, ease: "easeOut" }}
+              >
+                <Logo size="lg" />
+                </p>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
+        <motion.section
+          animate={{ opacity: phase === "main" ? 1 : 0 }}
+          transition={{ duration: 0.9, ease: "easeOut" }}
+          className="relative min-h-screen"
+        >
+          <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-
+  gradient(circle_at_50%_14%,rgba(120,130,255,0.2),transparent_42%),radial-
+  gradient(circle_at_50%_80%,rgba(244,114,182,0.16),transparent_45%),linear-
+  gradient(to_bottom,rgba(2,6,15,0.3),rgba(0,0,0,0.84))]" />
+
+          <div className="relative z-20 flex min-h-screen items-center justify-center
+  px-6 py-12">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
+              className="mx-auto flex w-full max-w-6xl flex-col items-center text-
+  center"
+            >
+              <OrbitLogo />
+
+              <h1 className="mt-5 font-display text-4xl font-bold tracking-tight text-
+                Broaden Your <span className="text-rose-300">HERizons</span>
+              </h1>
+              <p className="mx-auto mt-3 max-w-3xl text-sm text-white/75 md:text-base">
+              </p>
+
+              <div className="mt-7 w-full max-w-4xl">
+  white/55 md:text-xs">
+                  Experience At A Glance
+                </p>
+
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                  {KEY_FACTS.map((fact, index) => {
+                    const isActive = index === activeFact;
+                      <button
+                        key={fact.label}
+                        type="button"
+                        onClick={() => setActiveFact(index)}
+                        className={`inline-flex items-center gap-2 rounded-full border
+                          isActive
+                            ? "border-rose-300/65 bg-rose-300/12"
+                            : "border-white/20 bg-black/20 hover:border-white/35
+  hover:bg-black/30"
+                        }`}
+                      >
+  center rounded-full px-1 text-xs font-bold ${
+                            isActive ? "bg-rose-300 text-black" : "bg-white/12 text-
+  white"
+                        >
+                          {fact.value}
+                        </span>
+                        <span className="text-[11px] uppercase tracking-[0.14em] text-
+  white/78">{fact.label}</span>
+                      </button>
+                    );
+                  })}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeFact}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    transition={{ duration: 0.28, ease: "easeOut" }}
+                    className="mx-auto mt-3 max-w-2xl text-center"
+                  >
+                    <p className="text-sm text-white/82 md:text-
+  base">{KEY_FACTS[activeFact].detail}</p>
+                  </motion.div>
+                </AnimatePresence>
+
+                <div className="mt-3 flex justify-center gap-1.5">
+                  {KEY_FACTS.map((_, index) => (
+                    <span
+                      key={index}
+                      className={`h-1.5 rounded-full transition-all ${
+                    />
+                </div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.85, ease: "easeOut", delay: 0.25 }}
+                className="relative mt-7 h-[330px] w-full max-w-[620px] md:h-[470px]"
+              >
+                <HeroGlobe />
+              </motion.div>
+
+              <motion.button
+                type="button"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.35 }}
+                onClick={() => router.push("/transition?from=landing")}
+                className="group mt-6 flex items-center gap-2 rounded-full border
+  border-rose-300/45 bg-black/35 px-8 py-3 font-semibold text-white backdrop-blur-md
+  transition hover:border-rose-200/75 hover:bg-black/50 hover:shadow-lg hover:shadow-
+  rose-500/20"
+              >
+                Begin Your Journey
+                <ArrowRight className="h-5 w-5 transition-transform group-
+  hover:translate-x-1" />
+              </motion.button>
+            </motion.div>
+          </div>
+        </motion.section>
+      </main>
+    )
