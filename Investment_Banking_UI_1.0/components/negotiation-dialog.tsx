@@ -45,7 +45,7 @@ function SpeechBubble({ line, animate = true }: { line: NegotiationLine; animate
         </p>
 
         <div
-          className={`rounded-2xl px-4 py-3 shadow-sm relative
+          className={`rounded-3xl px-4 py-3 shadow-sm relative transition-transform duration-300 hover:-translate-y-0.5
             ${isClient
               ? "bg-orange-500/10 border border-orange-500/20 rounded-tl-sm"
               : "bg-emerald-500/10 border border-emerald-500/20 rounded-tr-sm"
@@ -91,7 +91,7 @@ function GuideFeedbackBubble({ feedback, isCorrect }: { feedback: string; isCorr
             {isCorrect ? `${GUIDE_NAME} — Correct!` : `${GUIDE_NAME} — Wrong Answer`}
           </p>
         </div>
-        <div className={`rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm border
+        <div className={`rounded-3xl rounded-tr-sm px-4 py-3 shadow-sm border transition-transform duration-300 hover:-translate-y-0.5
           ${isCorrect
             ? "bg-emerald-500/10 border-emerald-500/20"
             : "bg-red-500/10 border-red-500/20"
@@ -132,7 +132,7 @@ function ChoiceButtons({
           type="button"
           disabled={disabled}
           onClick={() => onChoose(choice)}
-          className="w-full text-left px-4 py-3 rounded-xl bg-blue-500/10 border border-blue-500/20
+          className="w-full text-left px-4 py-3 rounded-2xl bg-blue-500/10 border border-blue-500/20
             text-sm text-foreground/90 hover:bg-blue-500/20 hover:border-blue-500/30
             active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
@@ -288,7 +288,7 @@ export function NegotiationDialog({ scenario, onComplete }: NegotiationDialogPro
                     <div className="flex justify-end mb-3 animate-slide-up">
                       <div className="max-w-[80%]">
                         <p className="text-[10px] font-display font-bold text-blue-500 mb-1 text-right">You</p>
-                        <div className={`rounded-2xl rounded-tr-sm px-4 py-3 shadow-sm border
+                        <div className={`rounded-3xl rounded-tr-sm px-4 py-3 shadow-sm border transition-transform duration-300 hover:-translate-y-0.5
                           ${lastChoice.isCorrect
                             ? "bg-blue-500/10 border-blue-500/20"
                             : "bg-red-500/10 border-red-500/20 line-through decoration-red-500/30"

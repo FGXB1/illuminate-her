@@ -5,6 +5,7 @@ import { Suspense, useMemo } from "react"
 import { gameNodes } from "@/lib/game-data"
 import { CityEnvironment } from "./CityEnvironment"
 import { Player } from "./Player"
+import { GuideCharacter } from "./Guide"
 import { BlockyCharacter, BlockyBuilding } from "./MinecraftAssets"
 import { PerspectiveCamera, Loader, Html } from "@react-three/drei"
 
@@ -102,6 +103,7 @@ export function Scene({ currentNode, completedNodes, onNodeClick }: SceneProps) 
           <CityEnvironment />
 
           <Player currentNode={currentNode} nodePositions={nodePositions} />
+          <GuideCharacter currentNode={currentNode} nodePositions={nodePositions} />
 
           {nodePositions.map((node) => {
             const isCompleted = completedNodes.has(node.id)

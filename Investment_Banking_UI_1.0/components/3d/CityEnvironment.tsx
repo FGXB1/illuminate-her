@@ -37,7 +37,7 @@ function NYCBuilding({ position, args, color, windowColor = "#fbbf24" }: {
       </mesh>
       {/* Window lights on front face */}
       {windows.map((wp, i) => (
-        <mesh key={i} position={[wp[0], wp[1], position[2] + d/2 + 0.05]}>
+        <mesh key={i} position={[wp[0], wp[1], position[2] + d/2 + 0.08]}>
           <planeGeometry args={[0.4, 0.5]} />
           <meshStandardMaterial
             color={windowColor}
