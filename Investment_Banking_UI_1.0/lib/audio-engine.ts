@@ -6,6 +6,7 @@ export class AudioEngine {
   // Effects
   private reverbNode: ConvolverNode | null = null;
   private reverbInput: GainNode | null = null;
+  private reverbSendGain: number = 0.6;
 
   private delayNode: DelayNode | null = null;
   private delayInput: GainNode | null = null;
@@ -153,6 +154,11 @@ export class AudioEngine {
     if (effect === 'distortion') this.isDistortionOn = active;
   }
 
+  public setReverbMix(value: number) {
+    // Value 0 to 1
+    this.reverbSendGain = value;
+  }
+
   public setOnStepCallback(callback: (step: number) => void) {
     this.onStepCallback = callback;
   }
@@ -228,7 +234,7 @@ export class AudioEngine {
     // Reverb Send
     if (this.isReverbOn && this.reverbInput) {
       const send = this.audioContext.createGain();
-      send.gain.value = 0.6;
+      send.gain.value = this.reverbSendGain;
       currentNode.connect(send);
       send.connect(this.reverbInput);
     }
