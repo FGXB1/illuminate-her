@@ -1,43 +1,60 @@
 "use client";
 
-import { CarStats, GameState } from "../lib/types";
-import { Gauge, Fuel, Activity, Disc, Flag, Zap, Map as MapIcon, Clock } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { CarStats, GameState, LAP_DISTANCE } from "../lib/types";
+import { Gauge, Fuel, Activity, Disc, AlertTriangle, Zap, Map as MapIcon, Clock } from "lucide-react";
 
-// Inline helper if needed, but standard string interpolation is fine for simple cases.
+// Oval track: ellipse centered at (100,60), rx=80, ry=40, drawn as two arcs
+const TRACK_PATH_D = "M20,60 A80,40 0 1,1 180,60 A80,40 0 1,1 20,60 Z";
 
-function TrackMap() {
+/** Progress 0–1 along the current lap. Dot position is driven by actual distance so one full lap = one circuit. */
+function TrackMap({ progress }: { progress: number }) {
+  const pathRef = useRef<SVGPathElement>(null);
+  const [point, setPoint] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    const path = pathRef.current;
+    if (!path) return;
+    const totalLength = path.getTotalLength();
+    const t = Math.max(0, Math.min(1, progress));
+    const p = path.getPointAtLength(t * totalLength);
+    setPoint({ x: p.x, y: p.y });
+  }, [progress]);
+
   return (
     <div className="relative w-32 h-20 opacity-80">
-      <svg viewBox="0 0 200 120" className="w-full h-full stroke-white fill-none stroke-[4]">
-        {/* Simple F1-style loop */}
-        <path d="M20,60 L50,20 L150,20 L180,60 L150,100 L50,100 Z" strokeLinejoin="round" strokeLinecap="round" />
-        {/* Animated dot for car position (simulated) */}
-        <circle r="6" fill="#ef4444">
-           <animateMotion dur="6s" repeatCount="indefinite" path="M20,60 L50,20 L150,20 L180,60 L150,100 L50,100 Z" />
-        </circle>
+      <svg viewBox="0 0 200 120" className="w-full h-full fill-none stroke-[4]" style={{ stroke: "#C1C1C1" }}>
+        <path
+          ref={pathRef}
+          d={TRACK_PATH_D}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {point != null && (
+          <circle r="6" fill="#D16666" cx={point.x} cy={point.y} />
+        )}
       </svg>
     </div>
   );
 }
 
 function ProgressBar({ value, max = 100, color = "bg-green-500", label, icon: Icon }: { value: number, max?: number, color?: string, label: string, icon: any }) {
-  // Calculate width for bar
   const width = Math.min(100, Math.max(0, (value / max) * 100));
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <div className="flex items-center justify-between text-xs uppercase tracking-wider text-neutral-400 font-semibold">
-        <div className="flex items-center gap-2">
-            <Icon size={16} />
-            <span>{label}</span>
-        </div>
-        <span>{Math.round(value)}%</span>
+    <div className="flex flex-col gap-1.5 w-full">
+      <div className="flex items-center justify-center gap-1.5">
+        <Icon size={22} style={{ color: "#D16666", flexShrink: 0 }} />
+        <span className="text-xs uppercase tracking-wider font-semibold" style={{ color: "#C1C1C1" }}>{label}</span>
       </div>
-      <div className="h-2 w-full bg-neutral-800 rounded-full overflow-hidden border border-white/5">
-        <div
-            className={`h-full transition-all duration-300 ${color}`}
-            style={{ width: `${width}%` }}
-        />
+      <div className="flex items-center gap-2">
+        <div className="h-2 flex-1 rounded-full overflow-hidden" style={{ backgroundColor: "#2C4251", border: "1px solid rgba(193,193,193,0.1)" }}>
+          <div
+              className={`h-full transition-all duration-300 ${color}`}
+              style={{ width: `${width}%` }}
+          />
+        </div>
+        <span className="text-xs font-mono font-semibold text-white whitespace-nowrap">{Math.round(value)}%</span>
       </div>
     </div>
   );
@@ -46,29 +63,28 @@ function ProgressBar({ value, max = 100, color = "bg-green-500", label, icon: Ic
 interface DashboardProps {
   stats: CarStats;
   gameState: GameState;
+  distance: number;
   onPitStop?: () => void;
 }
 
-export default function Dashboard({ stats, gameState, onPitStop }: DashboardProps) {
+export default function Dashboard({ stats, gameState, distance, onPitStop }: DashboardProps) {
+  const progressInLap = ((distance % LAP_DISTANCE) + LAP_DISTANCE) % LAP_DISTANCE / LAP_DISTANCE;
 
-  // Tire Health logic: 100 is good (Green), 0 is bad (Red).
   const getTireHealthColor = (health: number) => {
-    if (health > 50) return "bg-green-500";
-    if (health > 20) return "bg-yellow-500";
+    if (health > 50) return "bg-emerald-500";
+    if (health > 20) return "bg-amber-500";
     return "bg-red-500";
   };
 
-  // Fuel color logic: 100 is full (Green), 0 is empty (Red).
   const getFuelColor = (fuel: number) => {
-    if (fuel > 50) return "bg-green-500";
-    if (fuel > 20) return "bg-yellow-500";
+    if (fuel > 50) return "bg-emerald-500";
+    if (fuel > 20) return "bg-amber-500";
     return "bg-red-500";
   };
 
-  // Engine color logic: 100 is healthy (Green).
   const getEngineColor = (health: number) => {
-      if (health > 80) return "bg-green-500";
-      if (health > 40) return "bg-yellow-500";
+      if (health > 80) return "bg-emerald-500";
+      if (health > 40) return "bg-amber-500";
       return "bg-red-500";
   }
 
@@ -76,25 +92,25 @@ export default function Dashboard({ stats, gameState, onPitStop }: DashboardProp
     <div className="absolute inset-0 pointer-events-none p-6 flex flex-col justify-between z-10">
       {/* Top Bar: Lap & Position */}
       <div className="flex justify-between items-start w-full">
-        <div className="bg-black/80 backdrop-blur-md p-4 rounded-xl border border-white/10 flex gap-8 pointer-events-auto shadow-2xl">
+        <div className="backdrop-blur-md p-4 rounded-xl flex gap-8 pointer-events-auto shadow-2xl" style={{ backgroundColor: "rgba(36,1,21,0.85)", border: "1px solid rgba(209,102,102,0.2)" }}>
             <div className="flex flex-col">
-                <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Lap</span>
+                <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "#C1C1C1" }}>Lap</span>
                 <span className="text-3xl font-bold font-mono text-white leading-none mt-1">
-                    {stats.lap} <span className="text-neutral-600 text-lg">/ {stats.totalLaps}</span>
+                    {stats.lap} <span className="text-lg" style={{ color: "#D16666" }}>/ {stats.totalLaps}</span>
                 </span>
             </div>
-            <div className="w-px bg-white/10" />
-            <div className="flex flex-col">
-                 <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Pos</span>
+            <div className="w-px" style={{ backgroundColor: "rgba(209,102,102,0.2)" }} />
+            <div className="flex flex-col items-center">
+                 <span className="text-[10px] uppercase tracking-widest font-bold" style={{ color: "#C1C1C1" }}>Pos</span>
                  <span className="text-3xl font-bold font-mono text-white leading-none mt-1">P{stats.position}</span>
             </div>
         </div>
 
         {/* Track Map & Time Prediction */}
-        <div className="bg-black/80 backdrop-blur-md px-6 py-2 rounded-xl border border-white/10 flex items-center gap-8 shadow-2xl">
-            <TrackMap />
+        <div className="backdrop-blur-md px-6 py-2 rounded-xl flex items-center gap-8 shadow-2xl" style={{ backgroundColor: "rgba(36,1,21,0.85)", border: "1px solid rgba(209,102,102,0.2)" }}>
+            <TrackMap progress={progressInLap} />
             <div className="flex flex-col items-end">
-                <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold flex items-center gap-1">
+                <span className="text-[10px] uppercase tracking-widest font-bold flex items-center gap-1" style={{ color: "#C1C1C1" }}>
                     <Clock size={10} /> Est. Lap Time
                 </span>
                 <span className="text-xl font-bold font-mono text-white tabular-nums">
@@ -104,16 +120,13 @@ export default function Dashboard({ stats, gameState, onPitStop }: DashboardProp
         </div>
 
         {/* Game State Indicator */}
-        <div className="bg-black/80 backdrop-blur-md px-6 py-3 rounded-xl border border-white/10 shadow-2xl">
+        <div className="backdrop-blur-md px-6 py-3 rounded-xl shadow-2xl" style={{ backgroundColor: "rgba(36,1,21,0.85)", border: "1px solid rgba(209,102,102,0.2)" }}>
             <div className="flex items-center gap-3">
                 <div className={`w-3 h-3 rounded-full ${
-                    gameState === 'racing' ? 'bg-green-500 animate-pulse' :
-                    gameState === 'pit_stop' ? 'bg-yellow-500 animate-pulse' : 'bg-blue-500'
-                }`} />
-                <span className={`uppercase font-bold tracking-widest text-sm ${
-                    gameState === 'racing' ? 'text-green-500' :
-                    gameState === 'pit_stop' ? 'text-yellow-500' : 'text-blue-500'
-                }`}>
+                    gameState === 'racing' ? 'animate-pulse' :
+                    gameState === 'pit_stop' ? 'animate-pulse' : ''
+                }`} style={{ backgroundColor: gameState === 'racing' ? '#D16666' : gameState === 'pit_stop' ? '#C1C1C1' : '#D16666' }} />
+                <span className="uppercase font-bold tracking-widest text-sm" style={{ color: gameState === 'racing' ? '#D16666' : gameState === 'pit_stop' ? '#C1C1C1' : '#D16666' }}>
                     {gameState === 'racing' ? 'RACE LIVE' : gameState.replace('_', ' ')}
                 </span>
             </div>
@@ -123,32 +136,32 @@ export default function Dashboard({ stats, gameState, onPitStop }: DashboardProp
       {/* Bottom Bar: Telemetry */}
       <div className="flex items-end gap-6 w-full">
         {/* Speedometer */}
-        <div className="bg-black/80 backdrop-blur-md p-6 rounded-xl border border-white/10 min-w-[180px] pointer-events-auto shadow-2xl flex flex-col justify-center items-center">
+        <div className="backdrop-blur-md p-6 rounded-xl min-w-[180px] pointer-events-auto shadow-2xl flex flex-col justify-center items-center" style={{ backgroundColor: "rgba(36,1,21,0.85)", border: "1px solid rgba(209,102,102,0.2)" }}>
              <span className="text-6xl font-bold font-mono text-white tabular-nums tracking-tighter leading-none">
                 {Math.round(stats.speed)}
              </span>
-             <div className="flex items-center gap-2 mt-2 text-neutral-500">
+             <div className="flex items-center gap-2 mt-2" style={{ color: "#C1C1C1" }}>
                 <Gauge size={14} />
                 <span className="text-[10px] uppercase tracking-widest font-bold">KM/H</span>
              </div>
         </div>
 
         {/* Stats Panel */}
-        <div className="bg-black/80 backdrop-blur-md p-6 rounded-xl border border-white/10 flex-1 flex gap-8 pointer-events-auto max-w-3xl shadow-2xl items-center">
+        <div className="backdrop-blur-md p-6 rounded-xl flex-1 flex gap-8 pointer-events-auto max-w-3xl shadow-2xl items-center" style={{ backgroundColor: "rgba(36,1,21,0.85)", border: "1px solid rgba(209,102,102,0.2)" }}>
             <ProgressBar
                 value={stats.fuel}
                 label="Fuel Level"
                 icon={Fuel}
                 color={getFuelColor(stats.fuel)}
             />
-            <div className="w-px bg-white/10 h-10" />
+            <div className="w-px h-10" style={{ backgroundColor: "rgba(209,102,102,0.2)" }} />
             <ProgressBar
                 value={100 - stats.tireWear}
                 label="Tire Health"
                 icon={Disc}
                 color={getTireHealthColor(100 - stats.tireWear)}
             />
-             <div className="w-px bg-white/10 h-10" />
+             <div className="w-px h-10" style={{ backgroundColor: "rgba(209,102,102,0.2)" }} />
             <ProgressBar
                 value={stats.engineHealth}
                 label="Engine Health"
@@ -161,10 +174,11 @@ export default function Dashboard({ stats, gameState, onPitStop }: DashboardProp
         {gameState === 'racing' && (
              <button
                 onClick={onPitStop}
-                className="pointer-events-auto bg-red-600 hover:bg-red-700 text-white font-bold py-4 px-8 rounded-xl uppercase tracking-widest transition-all shadow-lg shadow-red-900/40 border border-red-500 hover:scale-105 active:scale-95 flex items-center gap-2 ml-auto"
+                className="pointer-events-auto font-bold py-3 px-5 rounded-lg uppercase tracking-wider text-xs transition-all hover:scale-105 active:scale-95 flex items-center gap-3 ml-auto"
+                style={{ backgroundColor: "#550C18", border: "1px solid #D16666", color: "#C1C1C1", boxShadow: "0 10px 25px rgba(85,12,24,0.5)" }}
              >
-                <Flag size={20} />
-                <span>Box Box</span>
+                <AlertTriangle size={40} style={{ color: "#D16666", flexShrink: 0 }} />
+                <span>Make an Emergency Pit Stop</span>
              </button>
         )}
       </div>
