@@ -1,18 +1,21 @@
 "use client";
 
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Environment, PerspectiveCamera, ContactShadows } from "@react-three/drei";
+import { Environment, PerspectiveCamera, ContactShadows } from "@react-three/drei";
 import CarModel, { CarPart, ProceduralCar } from "./CarModel";
 import { GameState, CarStats } from "../lib/types";
-import { useEffect, useRef, useMemo, Suspense } from "react";
+import { useRef, useMemo, Suspense } from "react";
 import * as THREE from "three";
 import React from 'react';
+import CameraController from "./CameraController";
+import { TRACK_CURVE, LAP_DISTANCE } from "../lib/track";
 
 interface GameCanvasProps {
   gameState: GameState;
   stats: CarStats;
   distance: number;
   onPartClick: (part: CarPart) => void;
+  selectedPart: CarPart | null;
 }
 
 class ErrorBoundary extends React.Component<{ fallback: React.ReactNode, children: React.ReactNode }, { hasError: boolean }> {
@@ -32,26 +35,12 @@ class ErrorBoundary extends React.Component<{ fallback: React.ReactNode, childre
   }
 }
 
-const TRACK_SCALE = 20; // Scale of the track visual
-const LAP_DISTANCE = 5000; // Meters in simulation
-
-// Shared track points logic
-const TRACK_POINTS = [
-  new THREE.Vector3(10, 0, 0),
-  new THREE.Vector3(8, 0, 10),
-  new THREE.Vector3(0, 0, 15),
-  new THREE.Vector3(-8, 0, 10),
-  new THREE.Vector3(-10, 0, 0),
-  new THREE.Vector3(-8, 0, -10),
-  new THREE.Vector3(0, 0, -15),
-  new THREE.Vector3(8, 0, -10),
-].map(v => v.multiplyScalar(TRACK_SCALE));
-
 function CarContainer({ stats, distance, onPartClick, gameState }: { stats: CarStats, distance: number, onPartClick: any, gameState: GameState }) {
   const groupRef = useRef<THREE.Group>(null);
   const visualDistance = useRef(distance);
 
-  const trackCurve = useMemo(() => new THREE.CatmullRomCurve3(TRACK_POINTS, true), []);
+  // Use shared curve
+  const trackCurve = TRACK_CURVE;
 
   useFrame((state, delta) => {
     if (!groupRef.current) return;
@@ -64,10 +53,6 @@ function CarContainer({ stats, distance, onPartClick, gameState }: { stats: CarS
 
         // Simple drift correction
         const diff = distance - visualDistance.current;
-        // If drift is small, correct slowly. If large (wrap around or glitch), snap or ignore.
-        // Wrap around check: LAP_DISTANCE is 5000.
-        // If distance jumped from 4999 to 5001 (lap changed), diff might be huge if visual didn't wrap yet?
-        // No, distance is total distance. So diff is simple.
 
         // Correct drift
         if (Math.abs(diff) > 20) {
@@ -91,8 +76,6 @@ function CarContainer({ stats, distance, onPartClick, gameState }: { stats: CarS
     // Look ahead
     const lookAtPos = position.clone().add(tangent);
     groupRef.current.lookAt(lookAtPos);
-
-    // Optional: Bank the car based on curve curvature? Too complex for now.
   });
 
   return (
@@ -110,8 +93,7 @@ function CarContainer({ stats, distance, onPartClick, gameState }: { stats: CarS
 
 function TrackMesh() {
     const geometry = useMemo(() => {
-        const curve = new THREE.CatmullRomCurve3(TRACK_POINTS, true);
-        const points = curve.getPoints(200);
+        const points = TRACK_CURVE.getPoints(200);
         return new THREE.BufferGeometry().setFromPoints(points);
     }, []);
 
@@ -123,21 +105,12 @@ function TrackMesh() {
     )
 }
 
-export default function GameCanvas({ gameState, stats, distance, onPartClick }: GameCanvasProps) {
-  const controlsRef = useRef<any>(null);
-
-  useEffect(() => {
-    if (controlsRef.current) {
-      if (gameState === 'racing') {
-         controlsRef.current.autoRotate = false;
-      }
-    }
-  }, [gameState]);
-
+export default function GameCanvas({ gameState, stats, distance, onPartClick, selectedPart }: GameCanvasProps) {
   return (
     <div className="w-full h-screen bg-neutral-900">
       <Canvas shadows>
         <PerspectiveCamera makeDefault position={[0, 40, 40]} fov={60} />
+        <CameraController gameState={gameState} selectedPart={selectedPart} distance={distance} />
 
         <ambientLight intensity={1.5} />
         <directionalLight
@@ -160,7 +133,6 @@ export default function GameCanvas({ gameState, stats, distance, onPartClick }: 
         </group>
 
         <Environment preset="city" />
-        <OrbitControls ref={controlsRef} enablePan={true} maxPolarAngle={Math.PI / 2} minDistance={10} maxDistance={200} />
       </Canvas>
     </div>
   );

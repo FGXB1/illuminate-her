@@ -2,10 +2,12 @@
 
 import { useRef, useState } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Mesh, Group } from "three";
+import { Mesh, Group, Vector3 } from "three";
 import { Html, useGLTF } from "@react-three/drei";
+import { CarPart, PART_CONFIG } from "../lib/carConfig";
 
-export type CarPart = "chassis" | "front-left-tire" | "front-right-tire" | "rear-left-tire" | "rear-right-tire" | "engine" | "spoiler";
+// Re-export for compatibility if needed, but better to import directly
+export type { CarPart };
 
 interface CarModelProps {
   onPartClick?: (part: CarPart) => void;
@@ -212,7 +214,40 @@ export function ProceduralCar({ onPartClick, isRacing = false }: CarModelProps) 
 // Main Car Model (GLB Loader)
 // ------------------------------------------------------------------
 
-export default function CarModel({ isRacing }: CarModelProps) {
+function Hotspot({ part, config, onPartClick }: { part: CarPart, config: any, onPartClick: any }) {
+    const [hovered, setHovered] = useState(false);
+
+    const handlePointerOver = (e: any) => {
+        e.stopPropagation();
+        setHovered(true);
+        document.body.style.cursor = "pointer";
+    };
+
+    const handlePointerOut = () => {
+        setHovered(false);
+        document.body.style.cursor = "auto";
+    };
+
+    return (
+        <mesh
+            position={config.lookAt} // Position at the center of the part
+            onClick={(e) => { e.stopPropagation(); onPartClick(part); }}
+            onPointerOver={handlePointerOver}
+            onPointerOut={handlePointerOut}
+        >
+            <boxGeometry args={config.hotspotSize} />
+            <meshBasicMaterial
+                color={hovered ? "#ffff00" : "#ffffff"}
+                transparent
+                opacity={hovered ? 0.3 : 0.0}
+                depthWrite={false}
+                wireframe={hovered} // Show wireframe on hover
+            />
+        </mesh>
+    );
+}
+
+export default function CarModel({ isRacing, onPartClick }: CarModelProps) {
   const { scene } = useGLTF('/models/f1_car.glb');
   const groupRef = useRef<Group>(null);
 
@@ -231,6 +266,16 @@ export default function CarModel({ isRacing }: CarModelProps) {
             Standard GLTF is meters. If model is in meters, scale 1 is fine.
         */}
         <primitive object={scene} scale={1.5} rotation={[0, Math.PI, 0]} />
+
+        {/* Hotspots - Only enabled if NOT racing (implied by usage, but we can guard) */}
+        {!isRacing && onPartClick && Object.entries(PART_CONFIG).map(([partName, config]) => (
+            <Hotspot
+                key={partName}
+                part={partName as CarPart}
+                config={config}
+                onPartClick={onPartClick}
+            />
+        ))}
     </group>
   );
 }
