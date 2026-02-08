@@ -8,6 +8,7 @@ export interface CarStats {
   lap: number;
   totalLaps: number;
   position: number;
+  pitStops: number;     // Number of pit stops taken
 }
 
 export const INITIAL_STATS: CarStats = {
@@ -18,6 +19,7 @@ export const INITIAL_STATS: CarStats = {
   lap: 1,
   totalLaps: 5,
   position: 1,
+  pitStops: 0,
 };
 
 export type PitStopAction = 'change_tires' | 'refuel' | 'fix_engine';

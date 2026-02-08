@@ -7,10 +7,29 @@ import PitStopModal from "@/components/PitStopModal";
 import { CarPart } from "@/components/CarModel";
 import { PitStopAction } from "@/lib/types";
 import { useState } from "react";
-import { Trophy, RefreshCcw } from "lucide-react";
+import { Trophy, RefreshCcw, Clock, Gauge, Activity } from "lucide-react";
+
+function formatTime(ms: number) {
+  if (!ms) return "0:00.000";
+  const m = Math.floor(ms / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  const mil = ms % 1000;
+  return `${m}:${s.toString().padStart(2, '0')}.${mil.toString().padStart(3, '0')}`;
+}
 
 export default function Home() {
-  const { gameState, stats, startRace, enterPitStop, applyPitStopAction } = useGameLoop();
+  const {
+    gameState,
+    stats,
+    distance,
+    lapTimes,
+    totalRaceTime,
+    startRace,
+    resetRace,
+    enterPitStop,
+    applyPitStopAction
+  } = useGameLoop();
+
   const [showIntro, setShowIntro] = useState(true);
 
   const handlePartClick = (part: CarPart) => {
@@ -33,11 +52,32 @@ export default function Home() {
     startRace();
   };
 
+  const handleRestart = () => {
+    resetRace();
+  };
+
+  // Calculate Average Speed
+  // total distance / total time (ms) -> m/ms -> * 3600000 / 1000 -> km/h
+  // Wait, stats.speed is updated every tick. distance is total distance.
+  const avgSpeed = totalRaceTime > 0 ? (distance / (totalRaceTime / 3600000)) / 1000 : 0;
+  // Wait, distance is in meters. totalRaceTime in ms.
+  // meters / hours = meters / (ms / 3600000) = (meters * 3600000) / ms.
+  // km/h = (meters / 1000) * 3600000 / ms = meters * 3600 / ms.
+  // Let's check: 5000m in 60000ms (1 min).
+  // 5000 * 3600 / 60000 = 300 km/h. Correct.
+  const calculatedAvgSpeed = totalRaceTime > 0 ? (distance * 3600) / totalRaceTime : 0;
+
+
   return (
     <main className="relative w-full h-screen overflow-hidden bg-black">
       {/* 3D Scene */}
       <div className="absolute inset-0 z-0">
-        <GameCanvas gameState={gameState} onPartClick={handlePartClick} />
+        <GameCanvas
+            gameState={gameState}
+            stats={stats}
+            distance={distance}
+            onPartClick={handlePartClick}
+        />
       </div>
 
       {/* UI Overlay */}
@@ -79,19 +119,55 @@ export default function Home() {
          <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-md">
             <Trophy size={80} className="text-yellow-500 mb-6 animate-bounce" />
             <h1 className="text-6xl font-bold mb-4 text-white">RACE FINISHED</h1>
-            <div className="bg-white/10 p-8 rounded-2xl border border-white/20 mb-8 w-96">
-                <div className="flex justify-between mb-4">
-                    <span className="text-neutral-400">Final Position</span>
-                    <span className="font-mono font-bold text-2xl">P{stats.position}</span>
+
+            <div className="bg-white/10 p-8 rounded-2xl border border-white/20 mb-8 min-w-[400px]">
+                <div className="grid grid-cols-2 gap-6 mb-6">
+                    <div className="flex flex-col">
+                        <span className="text-neutral-400 text-xs uppercase tracking-widest mb-1">Total Time</span>
+                        <span className="font-mono font-bold text-3xl flex items-center gap-2">
+                             <Clock size={20} className="text-blue-400" />
+                             {formatTime(totalRaceTime)}
+                        </span>
+                    </div>
+                    <div className="flex flex-col">
+                        <span className="text-neutral-400 text-xs uppercase tracking-widest mb-1">Avg Speed</span>
+                        <span className="font-mono font-bold text-3xl flex items-center gap-2">
+                             <Gauge size={20} className="text-green-400" />
+                             {Math.round(calculatedAvgSpeed)} <span className="text-lg text-neutral-500">KM/H</span>
+                        </span>
+                    </div>
+                     <div className="flex flex-col">
+                        <span className="text-neutral-400 text-xs uppercase tracking-widest mb-1">Pit Stops</span>
+                        <span className="font-mono font-bold text-3xl flex items-center gap-2">
+                             <Activity size={20} className="text-red-400" />
+                             {stats.pitStops}
+                        </span>
+                    </div>
+                     <div className="flex flex-col">
+                        <span className="text-neutral-400 text-xs uppercase tracking-widest mb-1">Total Laps</span>
+                        <span className="font-mono font-bold text-3xl">
+                             {stats.totalLaps}
+                        </span>
+                    </div>
                 </div>
-                <div className="flex justify-between">
-                    <span className="text-neutral-400">Total Laps</span>
-                    <span className="font-mono font-bold text-2xl">{stats.totalLaps}</span>
+
+                <div className="border-t border-white/10 pt-4">
+                    <span className="text-neutral-400 text-xs uppercase tracking-widest mb-3 block">Lap Times</span>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                        {lapTimes.map((time, i) => (
+                            <div key={i} className="flex justify-between items-center bg-black/20 p-2 rounded text-sm">
+                                <span className="text-neutral-500">Lap {i + 1}</span>
+                                <span className="font-mono font-bold">{formatTime(time)}</span>
+                            </div>
+                        ))}
+                         {/* Show current/last lap if finished mid-lap? No, race finished means completed all laps usually. */}
+                    </div>
                 </div>
             </div>
+
             <button
-                onClick={() => window.location.reload()}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl uppercase tracking-widest flex items-center gap-2 transition-colors"
+                onClick={handleRestart}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-xl uppercase tracking-widest flex items-center gap-2 transition-colors hover:scale-105"
             >
                 <RefreshCcw size={20} />
                 <span>Race Again</span>

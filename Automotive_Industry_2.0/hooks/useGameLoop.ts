@@ -8,19 +8,56 @@ const LAP_DISTANCE = 5000; // virtual meters
 const BASE_SPEED = 280; // km/h
 
 export function useGameLoop() {
-  const [gameState, setGameState] = useState<GameState>('pit_stop'); // Start in pit stop to customize? Or ready? Let's say pit_stop as "garage"
+  const [gameState, setGameState] = useState<GameState>('pit_stop');
   const [stats, setStats] = useState<CarStats>(INITIAL_STATS);
   const [distance, setDistance] = useState(0);
 
-  const statsRef = useRef(stats);
-  statsRef.current = stats;
+  // Race timing state
+  const [lapTimes, setLapTimes] = useState<number[]>([]);
+  const [totalRaceTime, setTotalRaceTime] = useState(0);
+  const [currentLapTime, setCurrentLapTime] = useState(0);
+
+  // Refs to access latest state inside interval without triggering re-renders or recreating interval
+  const stateRef = useRef({
+    gameState,
+    stats,
+    distance,
+    lapTimes,
+    totalRaceTime,
+    currentLapTime
+  });
+
+  // Update ref whenever state changes
+  useEffect(() => {
+    stateRef.current = {
+      gameState,
+      stats,
+      distance,
+      lapTimes,
+      totalRaceTime,
+      currentLapTime
+    };
+  }, [gameState, stats, distance, lapTimes, totalRaceTime, currentLapTime]);
 
   const startRace = useCallback(() => {
+    setGameState('racing');
+    // If resetting race (e.g. from finished state or fresh start)
+    // We check if lap > totalLaps or just reset if desired.
+    // For now, let's just set to racing. If we want restart, we need a reset function.
+  }, []);
+
+  const resetRace = useCallback(() => {
+    setStats(INITIAL_STATS);
+    setDistance(0);
+    setLapTimes([]);
+    setTotalRaceTime(0);
+    setCurrentLapTime(0);
     setGameState('racing');
   }, []);
 
   const enterPitStop = useCallback(() => {
     setGameState('pit_stop');
+    setStats(prev => ({ ...prev, pitStops: prev.pitStops + 1 }));
   }, []);
 
   const applyPitStopAction = useCallback((action: PitStopAction) => {
@@ -42,91 +79,108 @@ export function useGameLoop() {
   }, []);
 
   useEffect(() => {
+    // Only run loop if racing
     if (gameState !== 'racing') return;
 
     const interval = setInterval(() => {
-      setStats((prev) => {
-        // Calculate deltas
-        // Speed fluctuation based on engine health and tires
-        const healthFactor = (prev.engineHealth / 100);
-        const tireFactor = (1 - (prev.tireWear / 100));
+      const {
+        stats: prevStats,
+        distance: prevDist,
+        lapTimes: prevLapTimes,
+        totalRaceTime: prevTotalTime,
+        currentLapTime: prevCurrentLapTime
+      } = stateRef.current;
 
-        // Degrade stats
-        // Fuel consumption: 0.05 per tick
-        const fuelConsumption = 0.05;
-        // Tire wear: 0.08 per tick
-        const tireWearRate = 0.08;
-        // Engine wear: 0.02 per tick
-        const engineWearRate = 0.02;
+      // 1. Calculate Stat Degradation
+      const healthFactor = (prevStats.engineHealth / 100);
+      const tireFactor = (1 - (prevStats.tireWear / 100));
 
-        const newFuel = Math.max(0, prev.fuel - fuelConsumption);
-        const newTireWear = Math.min(100, prev.tireWear + tireWearRate);
-        const newEngineHealth = Math.max(0, prev.engineHealth - engineWearRate);
+      const fuelConsumption = 0.05;
+      const tireWearRate = 0.08;
+      const engineWearRate = 0.02;
 
-        // Speed calculation
-        let currentSpeed = BASE_SPEED * healthFactor * (0.8 + 0.2 * tireFactor);
-        // Add some noise
-        currentSpeed += (Math.random() - 0.5) * 10;
+      let newFuel = Math.max(0, prevStats.fuel - fuelConsumption);
+      let newTireWear = Math.min(100, prevStats.tireWear + tireWearRate);
+      let newEngineHealth = Math.max(0, prevStats.engineHealth - engineWearRate);
 
-        // If out of fuel or blown tires, stop
-        if (newFuel <= 0 || newTireWear >= 100 || newEngineHealth <= 0) {
+      let currentSpeed = BASE_SPEED * healthFactor * (0.8 + 0.2 * tireFactor);
+
+      // Add randomness
+      currentSpeed += (Math.random() - 0.5) * 10;
+      currentSpeed = Math.max(0, currentSpeed);
+
+      // Force stop if critical failure
+      if (newFuel <= 0 || newTireWear >= 100 || newEngineHealth <= 0) {
            currentSpeed = 0;
-           // Force pit stop? Or Game Over? Let's just stop for now or force pit stop
-           // But we need to handle state change outside reducer-like update if possible, or use effect
-        }
+           // In this simplified version, we just stop.
+           // In a real game, this might trigger a 'retired' state.
+      }
 
-        return {
-          ...prev,
+      // 2. Calculate Distance
+      // distance = speed (km/h) * time (h) * 1000 (m/km)
+      const distDelta = (currentSpeed * 1000) * (TICK_RATE / 3600000);
+      const newTotalDistance = prevDist + distDelta;
+
+      // 3. Calculate Lap
+      // Lap starts at 1.
+      // Distance 0 to LAP_DISTANCE is Lap 1.
+      // Distance LAP_DISTANCE to 2*LAP_DISTANCE is Lap 2.
+      const currentLap = Math.floor(newTotalDistance / LAP_DISTANCE) + 1;
+
+      // 4. Update Time
+      let newTotalTime = prevTotalTime + TICK_RATE;
+      let newCurrentLapTime = prevCurrentLapTime + TICK_RATE;
+      let newLapTimes = [...prevLapTimes];
+
+      // Check for Lap Completion
+      if (currentLap > prevStats.lap) {
+          // Lap just finished
+          // Record the time for the completed lap
+          newLapTimes.push(newCurrentLapTime);
+          newCurrentLapTime = 0;
+      }
+
+      // 5. Update State
+      const newStats = {
+          ...prevStats,
           speed: currentSpeed,
           fuel: newFuel,
           tireWear: newTireWear,
           engineHealth: newEngineHealth,
-        };
-      });
+          lap: currentLap,
+          position: prevStats.position // Position logic not implemented (single player)
+      };
 
-      // Update distance and laps
-      setDistance((prevDistance) => {
-        // distance = speed (km/h) * time (h)
-        // time = TICK_RATE / 3600000
-        const speed = statsRef.current.speed;
-        const distDelta = (speed * 1000) * (TICK_RATE / 3600000); // meters
-        const newDist = prevDistance + distDelta;
-
-        if (newDist >= LAP_DISTANCE) {
-           // Lap completed
-           setStats((s) => {
-             const newLap = s.lap + 1;
-             // Allow lap to go over totalLaps to trigger finish state in useEffect
-             return { ...s, lap: newLap };
-           });
-           return newDist - LAP_DISTANCE;
-        }
-        return newDist;
-      });
+      // Check Finish Condition
+      if (currentLap > prevStats.totalLaps) {
+          setGameState('finished');
+          // Update stats one last time to show final state
+          setStats(newStats);
+          setDistance(newTotalDistance);
+          setLapTimes(newLapTimes);
+          setTotalRaceTime(newTotalTime);
+          setCurrentLapTime(newCurrentLapTime);
+      } else {
+          setStats(newStats);
+          setDistance(newTotalDistance);
+          setLapTimes(newLapTimes);
+          setTotalRaceTime(newTotalTime);
+          setCurrentLapTime(newCurrentLapTime);
+      }
 
     }, TICK_RATE);
 
     return () => clearInterval(interval);
-  }, [gameState]);
-
-  // Watch for state transitions based on stats
-  useEffect(() => {
-    if (gameState === 'racing') {
-        if (stats.lap > stats.totalLaps) {
-            setGameState('finished');
-        }
-        // Auto pit stop if things are critical? Or let user fail?
-        // Let's force pit stop if critical
-        if (stats.fuel < 5 || stats.tireWear > 90 || stats.engineHealth < 10) {
-            setGameState('pit_stop');
-        }
-    }
-  }, [stats, gameState]);
+  }, [gameState]); // Only re-run if gameState changes (start/stop)
 
   return {
     gameState,
     stats,
+    distance,
+    lapTimes,
+    totalRaceTime,
     startRace,
+    resetRace,
     enterPitStop,
     applyPitStopAction
   };
