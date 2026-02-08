@@ -1,187 +1,256 @@
-  # illuminate-her
+# Herizon (illuminate-her)
 
-# Summary: 
+Herizon is a voice-led, interactive web app that gives girls a first real glimpse into male-dominated industries through short simulations, real women’s stories, and clear next steps.
 
-For the hackathon we are planning on creating an app that exposes women to male-dominated fields and helps them explore opportunities and interests that they might have in industries that seemed daunting because of how the society (patriarchy) has framed it over time. 
+We are not building a full course. We are building a spark.
 
-# Idea: 
+---
 
-The idea is to target a few specific industries in this hackathon and then show how this could be expanded into 100s of different fields in the future. We want to create a gamification/interactive experience and target it towards middle school or high school girls to spark the interest at a age where you can act on it. So, we are planning on targeting three different industries: music production, automotive industry, and investment banking.  
+## Table of contents
 
-The plan is to create a demo or interactive experience for each of them and through each demo you target different perspective or paths or concepts in that one industry. For music production we wanted to do rhythms, instruments, and audio effects. For automotive industry we wanted to focus on tire traction, frame, and engine power/fuel (we were thinking of this in the f1 pit stop perspective just as an idea); we also want to focus on looking at capital management, speed, time, efficiency etc. For the investment banking part, we wanted to look at the capital/stocks side of thing, strategies of most profits, and negotiation/communication with clients. 
+- [What it is](#what-it-is)
+- [Problem](#problem)
+- [Solution](#solution)
+- [What you can do in the app](#what-you-can-do-in-the-app)
+- [How the experience works](#how-the-experience-works)
+- [Tech stack](#tech-stack)
+- [Architecture and code structure](#architecture-and-code-structure)
+- [Gemini and ElevenLabs](#gemini-and-elevenlabs)
+- [Data and analytics](#data-and-analytics)
+- [Getting started](#getting-started)
+- [Environment variables](#environment-variables)
+- [Development conventions](#development-conventions)
+- [Safety and attribution](#safety-and-attribution)
+- [Roadmap](#roadmap)
 
-# Specs: 
+---
 
-I am listing out some tracks and awards at the hackathon that we would prefer to use and focus on so that we have the best chance of winning.  
+## What it is
 
-# MLH: 
+Herizon is a set of “career exhibits” designed for middle school and high school girls. Each exhibit is a 5 to 7 minute guided experience. Users learn by doing, not by reading a long lesson.
 
-Best Use of Gemini API 
+We target three industries for the hackathon:
+- Music production
+- Automotive (motorsport engineering)
+- Finance (investment banking and deal making)
 
-Best Use of Solana 
+The product is designed to scale to many more fields using the same structure.
 
-Best Use of AI powered by reach capital 
+---
 
-Best Use of Eleven Labs 
+## Problem
 
-Best Use of Snowflake API 
+A lot of girls never get a safe first try in certain fields. The “this isn’t for me” feeling shows up early, especially in industries that have been culturally framed as male. That barrier is not only technical, it is social and psychological.
 
-Best Use of MongoDB Atlas 
+---
 
-# InnovateHer tracks: 
+## Solution
 
-Mind Matters: This track encourages participants to create tech solutions that support emotional well-being, mental health awareness, and accessible support systems. Projects should prioritize inclusivity, reduce stigma, and offer low-barrier tools for selfcare, especially for students and underrepresented groups. 
+Herizon reduces the barrier to entry by giving users:
+- a low-pressure first attempt through simulation
+- supportive guidance through a voice mentor
+- real women’s experiences embedded in the flow
+- a concrete next-step roadmap after every exhibit
 
-Art and Culture: This track encourages participants to transform technology into a tool for artistic expression, blending code with music, fashion, design, and storytelling to craft meaningful, visually rich, and boundary-pushing experiences. (I think the best track for our idea, but it doesn’t really fit into it so tell me how to add ideas and features that makes it more specific to this track) 
+We focus on confidence, clarity, and momentum.
 
-Finance Forward: Create tech solutions that empower women to take control of their finances. From tackling wage gaps and career breaks to building confidence in investing and budgeting, projects should provide tools that are inclusive, accessible, and actionable. 
+---
 
-#Some features: 
+## What you can do in the app
 
-Since these fields are predominantly men and people usually don’t know famous women in them, we can show the stories of these women, have them do talks, and just showcase their efforts. 
+Each exhibit includes:
+- A short intro and what the job actually looks like
+- A hands-on simulation (you create something or make decisions)
+- Women spotlights inside the experience (pioneers and everyday professionals)
+- A “What you learned” summary
+- A next-step roadmap (tools, resources, communities, opportunities)
+- A “Letter to Future Me” reflection you can save
 
-Add specific opportunities like programs, courses, jobs for women so that it is easier for them to get into a field where they might be judged to be the only woman there just cause that is how the industry is. 
+---
 
-# Conclusion: 
+## How the experience works
 
-We are trying to help women see all the opportunities that are present out there at a younger more foundational, developmental age. We want to show them that mechanics and working with engines and hardware isn’t something that only men can do, to show them that women can and are pursuing careers like that. We want to not make this a course, khan academy type app. We want to just expose them to certain industries that they might like and then guide them into how they could form a career in that. We are trying to spark the interest. 
- 
+We use one consistent learning loop across all exhibits:
 
- 
+1) **Hook**
+   - The mentor voice welcomes the user and explains the goal.
 
-# Features (finalized): 
+2) **Do**
+   - The user interacts with the simulation (not slides).
 
-"Her Story" animated timelines —  
+3) **Learn at the moment**
+   - Micro-lessons appear only when they matter (contextual learning).
 
-show illustrated stories of real women pioneers (Suzanne Ciani in music production, Simone Giertz or Danica Patrick in automotive, Sallie Krawcheck in finance).  
+4) **Story reinforcement**
+   - Short women spotlight moments are inserted in the flow to reinforce belonging and inspiration.
 
-Use ElevenLabs to have AI-narrated audio bios in these women's "voices." 
+5) **Finish with action**
+   - The roadmap turns curiosity into next steps the user can actually do.
 
-Gemini API –  
+This is how we keep the experience immersive and effective.
 
-We create a more immersive experience by using Gemini to interpret user interaction signals and estimate cognitive or emotional load, then adapt course content in real time.  
+---
 
-Rather than detecting emotions or diagnosing trauma, the system adjusts pacing, tone, and presentation style to reduce overload and avoid triggering patterns, optimizing for engagement and learning continuity under changing user conditions 
+## Exhibits
 
-Eleven Labs (Best Use of Eleven Labs) —  
+### 1) Music Lab
+**Goal:** Make a beat that feels confident.
 
-Use this for narration and immersion. Have AI voices narrate the stories of women pioneers in each industry.  
+Core features:
+- Step sequencer grid (Kick, Snare, Hi Hat, Clap)
+- 8 or 16 steps
+- Tempo control, Play/Stop
+- Effects toggles (Reverb, Echo, optional Distortion)
+- Simple challenges that teach structure through action
 
-Add voice-guided instructions in each demo so users feel like they have a personal mentor talking them through it.  
+What the user learns:
+- basic rhythm structure
+- what drum parts do in a beat
+- how simple effects change a sound
 
-For the music production module, you could even use ElevenLabs to demonstrate vocal effects and audio processing concepts. 
+---
 
-MongoDB Atlas (Best Use of MongoDB Atlas) —  
+### 2) Pit Stop Lab (Automotive)
+**Goal:** Engineer a race strategy.
 
-Use this as your database for storing user profiles, progress, quiz scores, leaderboard data, and the community gallery submissions 
+Core features:
+- Live telemetry dashboard
+  - speed
+  - control
+  - tire wear
+  - engine health
+  - lap time prediction
+- Pit stop choices
+  - tires (traction)
+  - frame or aero (control vs speed)
+  - fuel or engine (performance vs reliability)
+- Micro-lessons triggered by thresholds (tire wear high, fuel low, engine health dropping)
 
-Add a "Letter to My Future Self" at the end — after completing all demos, the user writes (or voice-records via Eleven Labs) a message to their future self about what they discovered. Store it in MongoDB and let them revisit it. This is a well-known therapeutic and self-care technique. 
+What the user learns:
+- tradeoffs are the job
+- reliability matters as much as speed
+- decisions have consequences
 
-# Each industry includes: 
+---
 
-Intro (what it is, what you do, quick explanation/facts/etc.) 
+### 3) Deal Room Lab (Finance)
+**Goal:** Build a simple deal and learn negotiation tradeoffs.
 
-Interactive demo (2 to 4 minutes) 
+Core features:
+- Interactive scenario choices (equity vs debt, valuation ranges, risk tradeoffs)
+- Glossary tooltips for terms
+- Story-based learning, not a textbook
 
-3 to 5 women spotlights embedded in the flow of the demo 
+What the user learns:
+- risk vs control is a real trade
+- finance is communication plus structure
+- decision-making is the skill
 
-Future Career Roadmap (organizations, education, certs, salary range) 
+---
 
-Essentially, we want this to be an exposure to the industry and gamify the experience. We want to get women's curiosity piqued and interest to spark rather than them being intimidated or reluctant to explore new fields. 
+## Tech stack
 
-# Three industries: 
+- **Framework:** Next.js 15 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Animation:** Framer Motion
+- **State:** Zustand
+- **Database:** MongoDB (optional, mock fallback supported)
+- **AI:** Google Gemini
+- **Voice:** ElevenLabs
+- **3D/Visualization:** Cobe, OGL
+- **Analytics:** Snowflake + SQL
 
-- Music Production 
-  - Music Lab: “Make a beat that feels confident” 
-  - Include very small intro to concept of rhythm, sfx 
-  - Could be like tips in the corner 
-  - Rhythm/Beats 
-    - Step Sequencer Grid: 
-    - 4 rows = Kick, Snare, Hi Hat, Clap 
-    - 8 or 16 columns = time steps 
-    - Tap square = activate sound 
-  - Sound Effects - User can toggle: 
-    - Reverb 
-    - Echo 
-    - Distortion (optional stretch goal) 
-  - Instruments 
-    - Synth 
-    - Piano 
-    - Bass line 
-  - UI Components Needed 
-    - Sequencer Grid Component 
-    - Sound Selector Panel 
-    -  Effects Toggle Panel 
-    -  Tempo Slider 
-    -  Play/Stop Button 
-    -  Sound Wave Visualization 
-    -  Tutorial Overlay System 
-- Investment Banking: Walk Through Wall Street 
-  - Core Gameplay Loop 
-    - User moves across board (Monopoly style) 
-    -  Lands on building or character 
-    -  Completes micro interaction 
-    -  Builds toward closing a deal 
-  - User interacts with different characters and buildings to learn 
-    - Investors teach 
-      - Capital 
-      - Risk tolerance 
-      -  Return expectations 
-      - Mini choice interaction. 
-    - Companies 
-      -  Valuation 
-      -  Growth 
-      -  Funding needs 
-      -  Dialogue tree style interaction 
-    - Buildings are the Trading Floor 
-      - Stocks 
-      - Market fluctuation 
-      - Mini slider or prediction mechanic.  
-    - Negotiation Room (Final Goal) - User assembles deal: 
-      - Choose equity %  
-      - Choose debt level 
-      - Choose valuation range 
-- UI Components Needed 
-  -  Board Map View (like Crossy Road 3D) 
-  -  Player Character Marker 
-  -  Dialogue Popup System 
-  -  Choice Card System 
-  -  Deal Meter UI 
-  -  Glossary Tooltip System 
-- Automotive: F1-type of interactive demo 
-  - Core Gameplay Loop: Goes through an F1 match 
-    -  Race begins 
-    -  Car runs laps 
-    -  Pit stop decision appears 
-    -  User selects upgrades or fixes 
-    -  Race continues 
-    -  Final result shown 
-  - Pit Stop features 
-    - Change/design the frame 
-    - Tires to help with traction  
-    - Fuel or fix up the engine  
-  - Stats That Update Live 
-    -  Speed 
-    -  Control 
-    -  Tire Wear 
-    -  Engine Health 
-    -  Lap Time Prediction 
-  - UI Components Needed 
-    -  Car visualization with interesting zoom-ins/depiction of parts 
-    - Track Map Visualization 
-    - Live Telemetry Dashboard 
-    -  Pit Stop Decision Modal 
-    -  Stat Bar Visualization 
-    -  Race Progress Timeline 
+---
 
-# Features (potential): 
+## Architecture and code structure
 
-Design-your-own elements — in the automotive demo, let them pick colors/designs for their F1 car. In music, let them create album art. In finance, let them design their own "brand" for a mock company. This adds a layer of creative ownership. 
+Typical structure:
 
-Snowflake API (Best Use of Snowflake) — Use this to store and query aggregated data: what industries are most popular among users, completion rates per module, common quiz answers. You can build a simple analytics dashboard showing trends like "78% of users discovered a new interest in automotive engineering." This demonstrates data-driven impact. 
+- `app/`
+  - routes for landing, exhibits, and roadmap
+  - `api/` routes for narration, analytics, and badges
+- `components/ui/`
+  - reusable UI primitives
+- `components/`
+  - app-specific components (mentor dock, story inserts, exhibit shells)
+- `lib/`
+  - service clients and utilities (Gemini, ElevenLabs, MongoDB, Snowflake)
+- `store/`
+  - Zustand stores (user settings, progress, analytics buffer)
+- `types/`
+  - shared TypeScript types for events, scripts, and content
 
-Solana (Best Use of Solana) — Award blockchain-based achievement badges or "certificates" when users complete a module. Think of them as digital collectibles — "I completed the F1 Pit Stop Challenge" or "Music Producer Level 1." These are lightweight to implement and judges love seeing blockchain used in a novel, non-financial way. 
+---
 
- 
+## Gemini and ElevenLabs
 
- 
+We built Herizon around a mentor that adapts in real time.
+
+### Gemini
+Gemini is the brain. We send it structured context such as:
+- which exhibit the user is in
+- what step they are on
+- what they just did
+- whether they seem stuck (time on step, repeated actions, help requests)
+
+Gemini returns short, beginner-friendly guidance:
+- one simple explanation
+- the next action to try
+- a supportive line to keep the user moving
+- a personalized roadmap summary at the end
+
+### ElevenLabs
+ElevenLabs is the voice. We convert Gemini’s guidance into spoken narration with the right tone (calm, hype, direct).
+We keep lines short for low latency and always provide:
+- captions
+- mute
+- text-only mode
+
+We also use ElevenLabs for short women spotlight moments. We do not imitate or clone anyone’s exact voice. We use original voices to narrate stories and include attribution.
+
+### Event-driven narration
+The UI triggers voice only when it matters:
+- enter exhibit
+- decision points (pit stop, deal choice, effects toggle)
+- learning moments (tire wear high, tempo change, risk spike)
+- stuck moments (Gemini simplifies the hint, ElevenLabs speaks it)
+- finish (Gemini generates roadmap summary, ElevenLabs reads it)
+
+---
+
+## Data and analytics
+
+### MongoDB (product memory)
+We store:
+- user settings (mentor vibe, captions, voice mode)
+- progress and completion
+- user choices and outcomes
+- saved reflections (“Letter to Future Me”)
+- saved artifacts (beat pattern, strategy, deal choices)
+
+### Snowflake + SQL (aggregated learning analytics)
+We store aggregated usage patterns to improve the product:
+- which exhibits are most chosen
+- completion rates
+- drop-off points and confusion points
+- how often hints are used
+- how long steps take
+
+We use SQL queries to find what to improve and then tune:
+- mentor timing
+- micro-lessons
+- Gemini prompts
+- roadmap templates
+
+---
+
+## Getting started
+
+### Prerequisites
+- Node.js v18+
+- npm
+
+### Install dependencies
+```bash
+npm install
