@@ -41,7 +41,7 @@ export const GUIDE_BIO = "20-year Wall Street veteran who has closed over $50B i
 // ========================================
 
 export const negotiationScenarios: NegotiationScenario[] = [
-  // ---- SCENARIO 1: Price Negotiation with Apex Technologies ----
+  // ---- SCENARIO 1: Price Negotiation with Apex Technologies (TECH M&A) ----
   {
     id: "apex-price",
     title: "The Apex Price Negotiation",
@@ -127,175 +127,116 @@ export const negotiationScenarios: NegotiationScenario[] = [
     ],
   },
 
-  // ---- SCENARIO 2: Navigating the Board Meeting ----
+  // ---- SCENARIO 2: Distressed Creditor Negotiation (RETAIL RESTRUCTURING) ----
   {
-    id: "board-meeting",
-    title: "The Board Room Showdown",
+    id: "retail-creditor",
+    title: "The Vulture Capital Showdown",
     introduction: [
-      { speaker: "narrator", text: "Priya's board of directors has called an emergency session. Two board members are skeptical about selling NovaTech. You need to convince the board that this deal is in the best interest of all shareholders." },
-      { speaker: "guide", text: "Board members think like fiduciaries. They care about shareholder value, timing risk, and their personal liability. Frame everything through the lens of 'what's best for shareholders.'" },
+      { speaker: "narrator", text: "You are meeting with 'The Wolf', a distressed debt investor who owns 40% of FashionForward's debt. He wants to force a liquidation to strip the assets. You need to convince him to agree to a debt-for-equity swap instead." },
+      { speaker: "guide", text: "Distressed investors care about one thing: recovery value. Don't appeal to his emotions or the employees' jobs. Show him that he makes more money keeping the company alive than killing it." },
     ],
     steps: [
       {
         dialogue: [
-          { speaker: "client", text: "I'm Raj Mehta, lead independent director. I've seen too many tech acquisitions destroy value. Why should we sell now when NovaTech could be worth $10B in three years as a public company?" },
+          { speaker: "client", text: "Why should I accept equity in a dying retailer? I'd rather force a liquidation today and get 40 cents on the dollar. Cash is king." },
         ],
         choices: [
           {
-            label: "That $10B projection assumes perfect execution, no market downturns, and continued 40% growth. Our analysis shows a 60% probability-weighted value of $4.2B if NovaTech stays independent, versus a guaranteed $5.5B today. A bird in the hand is worth two in the bush.",
+            label: "But think of the 5,000 employees! If we liquidate, they lose everything.",
+            isCorrect: false,
+            guideFeedback: "This is a moral argument, not a financial one. Distressed investors often don't care about stakeholders. You need to show him the numbers.",
+          },
+          {
+            label: "Our analysis shows liquidation value is actually 15 cents on the dollar after legal fees. But if you swap for equity, our conservative turnaround plan projects the equity value at 80 cents in 2 years. You'd be throwing away value by liquidating.",
             isCorrect: true,
-            guideFeedback: "Perfect framing. You acknowledged the upside but grounded it in probability. Board members have fiduciary duty — showing them the risk-adjusted comparison makes the sale decision defensible. The proverb at the end makes it memorable.",
+            guideFeedback: "Perfect. You hit him with the cold hard math. Showing that liquidation yields less than he thinks is the only way to stop him.",
           },
           {
-            label: "NovaTech has already peaked. The market is turning and you should sell while you still can.",
+            label: "We can offer you a better interest rate if you extend the loan.",
             isCorrect: false,
-            guideFeedback: "You just insulted the company that everyone in this room built. Saying they've 'peaked' will immediately make the board defensive and hostile. Never disparage the target — instead, show why the current offer captures maximum value.",
-          },
-          {
-            label: "Trust me, I've done a lot of deals. This is the right time to sell.",
-            isCorrect: false,
-            guideFeedback: "'Trust me' is not an argument. Board members are sophisticated professionals who need data, not appeals to authority. They're personally liable for this decision and need quantitative justification they can stand behind.",
+            guideFeedback: "The company has no cash flow to pay interest. Extending the loan just delays the inevitable. A debt-for-equity swap is the only viable path.",
           },
         ],
       },
       {
         dialogue: [
-          { speaker: "client", text: "Even if the numbers make sense, I'm worried about our employees. Priya promised them we'd protect the team. What guarantees do we have that Apex won't slash headcount six months after closing?" },
+          { speaker: "client", text: "Fine, the liquidation numbers are ugly. But I don't trust current management. They drove this bus off the cliff. I want them gone." },
         ],
         choices: [
           {
-            label: "Employee matters aren't really a board-level concern. The shareholders come first, and this price is excellent for them.",
-            isCorrect: false,
-            guideFeedback: "Employee retention IS a board-level concern, especially when the CEO made it a priority. Dismissing it shows you don't understand your client's values. It also ignores the reality that talent is NovaTech's core asset — losing engineers destroys the value Apex is paying for.",
-          },
-          {
-            label: "We've negotiated 2-year retention packages for the top 50 engineers with guaranteed bonuses and accelerated vesting. Apex has committed to maintaining the engineering office for at least 3 years. These terms are legally binding in the purchase agreement.",
+            label: "We agree. As part of the restructuring, we will bring in a Chief Restructuring Officer and replace the CEO. You will have 2 board seats to oversee the process.",
             isCorrect: true,
-            guideFeedback: "This is exactly what the board needs to hear — specific, concrete protections that are legally enforceable. You showed that employee concerns were taken seriously and addressed with real commitments, not just promises.",
+            guideFeedback: "Good move. You gave him control and accountability without giving up the whole company. This addresses his trust issue.",
           },
           {
-            label: "Apex has a great track record with acquisitions. I'm sure they'll treat everyone well.",
+            label: "Actually, Sarah is doing her best. She just needs more time.",
             isCorrect: false,
-            guideFeedback: "Your earlier research showed Apex actually struggled with talent retention in past acquisitions. The board likely knows this too. Vague reassurances without specific contractual protections will undermine your credibility.",
-          },
-        ],
-      },
-      {
-        dialogue: [
-          { speaker: "client", text: "One last question. Goldman Sachs is advising the buyer. How do we know JPMorgan isn't just pushing this deal through to collect the advisory fee?" },
-        ],
-        choices: [
-          {
-            label: "Our fee is standard at 0.5% of deal value, and it's disclosed in our engagement letter. We ran a competitive process with 5 initial buyers narrowed to 2 finalists. The process is documented and defensible. We'd recommend rejecting any offer below our valuation floor.",
-            isCorrect: true,
-            guideFeedback: "Transparency wins trust. You addressed the conflict-of-interest concern head-on by disclosing the fee, documenting the process, and showing willingness to walk away. This protects the board from liability and builds confidence in your advice.",
-          },
-          {
-            label: "That's offensive. JPMorgan has the highest reputation on Wall Street. We would never compromise our integrity.",
-            isCorrect: false,
-            guideFeedback: "Getting defensive about a legitimate governance question is a red flag to board members. Conflicts of interest are a real concern in M&A advisory. The professional response is transparency about fees, process documentation, and your willingness to recommend against a bad deal.",
-          },
-          {
-            label: "Our interests are aligned — the higher the price, the higher our fee. So we're naturally motivated to get you the best deal.",
-            isCorrect: false,
-            guideFeedback: "This actually highlights the conflict rather than addressing it. A 0.5% fee means you earn an extra $1.5M on a $300M price increase — not enough to truly align interests. The board will see through this logic. Better to show process integrity.",
+            guideFeedback: "Defending failing management to an angry creditor is a losing battle. You need to show that things will change.",
           },
         ],
       },
     ],
     successOutro: [
-      { speaker: "narrator", text: "The board votes unanimously to approve the sale. Raj Mehta shakes your hand: 'Well presented. You've earned JPMorgan's reputation today.'" },
-      { speaker: "guide", text: "You handled a skeptical board with data, transparency, and respect. Board presentations are where deals are won or lost — today you won." },
+      { speaker: "narrator", text: "The Wolf grunts and signs the term sheet. 'Don't make me regret this.' FashionForward lives to fight another day." },
+      { speaker: "guide", text: "You saved the company by speaking the creditor's language: value recovery. Great job." },
     ],
     failureOutro: [
-      { speaker: "narrator", text: "The board votes to delay the sale pending further review. The deal timeline slips, and Apex begins looking at other targets. The window of opportunity is closing." },
-      { speaker: "guide", text: "Board members need data-driven arguments and transparency. Emotional appeals, vague reassurances, and defensiveness don't work with experienced directors. The deal is at risk now." },
+      { speaker: "narrator", text: "The Wolf walks out. 'See you in bankruptcy court.' The company is forced into liquidation." },
+      { speaker: "guide", text: "You failed to convince him that the company was worth more alive than dead. Always focus on the counterparty's incentives." },
     ],
   },
 
-  // ---- SCENARIO 3: Handling the Hostile Counter-Bid ----
+  // ---- SCENARIO 3: IPO Pricing (ENERGY IPO) ----
   {
-    id: "hostile-counter",
-    title: "The Hostile Counter-Bid",
+    id: "energy-ipo-price",
+    title: "The GreenPower IPO Pricing",
     introduction: [
-      { speaker: "narrator", text: "48 hours before signing, Meridian Partners crashes the deal with an unsolicited $6.1B offer — 10% above Apex's bid. Priya is conflicted. The board wants answers. You need to analyze this fast and advise correctly." },
-      { speaker: "guide", text: "A last-minute competing bid is high-pressure. The instinct is to jump at the higher number, but the details matter enormously. Evaluate structure, certainty, and hidden risks before advising." },
+      { speaker: "narrator", text: "It's 10 PM before IPO day. The order book is 5x oversubscribed. The bankers want to price at $18 to ensure a 'pop'. Elena wants $22 to maximize cash. You need to find the sweet spot." },
+      { speaker: "guide", text: "IPO pricing is an art. Too high, and the stock crashes (broken deal). Too low, and you leave money on the table. You need to balance the founder's greed with the investors' need for a win." },
     ],
     steps: [
       {
         dialogue: [
-          { speaker: "client", text: "Victoria, Meridian is offering $6.1 billion. That's $600 million more than Apex. My shareholders will sue me if I don't take the higher offer. How can you possibly recommend I turn down $600 million?" },
+          { speaker: "client", text: "I built this company from nothing! Why should I give these hedge funds a discount? Price it at $24! The demand is there!", "speaker": "client" }, // "client" here represents the founder Elena
         ],
         choices: [
           {
-            label: "Let's break down the offer structure first. Meridian is offering 40% in stock with a 6-month lockup. Their stock has a beta of 1.8 and has dropped 25% in the last quarter. The effective value at risk-adjusted terms could be $5.3B — actually less than Apex's all-cash bid.",
+            label: "Elena, the demand at $24 is 'fluff' — hedge funds who will flip the stock immediately. Real long-term holders are at $20. If we price at $24, the stock could crash next week.",
             isCorrect: true,
-            guideFeedback: "Exactly right. The headline number is misleading. You quantified the stock risk clearly — the lockup period, volatility, and recent decline all reduce the real value. Your shareholders can't spend a stock price that might not be there in 6 months.",
+            guideFeedback: "Correct. You explained the quality of the order book, not just the quantity. Long-term investors are key to a stable stock price.",
           },
           {
-            label: "You're right, $6.1B is much better. We should switch to Meridian immediately.",
+            label: "You're right! Let's go for $25! Let's get every penny!",
             isCorrect: false,
-            guideFeedback: "Jumping at the headline number without analyzing deal structure is the most dangerous mistake in M&A. The stock component, lockup period, and regulatory risk could easily eat the $600M premium. A good advisor looks beyond the top-line price.",
-          },
-          {
-            label: "I think we should just ignore Meridian. We've been working with Apex for months and it would be rude to switch now.",
-            isCorrect: false,
-            guideFeedback: "Your fiduciary duty is to shareholders, not to maintaining polite relationships. You're legally obligated to consider any superior proposal. The right approach is to evaluate it rigorously, not dismiss it or accept it blindly.",
+            guideFeedback: "This is reckless. Overpricing an IPO is the surest way to anger investors and ruin the company's reputation in the public markets.",
           },
         ],
       },
       {
         dialogue: [
-          { speaker: "client", text: "The board is still nervous about the headline number difference. Raj says that if this goes to court, a judge will ask why we turned down $6.1 billion for $5.5 billion. How do we protect ourselves legally?" },
+          { speaker: "client", text: "Okay, but $18 is insulting. I won't do it." },
         ],
         choices: [
           {
-            label: "We'll prepare a detailed analysis comparing both bids on an apples-to-apples basis: certainty of closing, regulatory risk, stock volatility analysis, financing conditions, and timeline. We'll get a fairness opinion from an independent advisor documenting that the Apex deal delivers superior risk-adjusted value.",
+            label: "Let's compromise at $21. It's above the range, maximizing your cash, but leaves just enough room for a 10-15% pop, which generates positive press and makes everyone happy.",
             isCorrect: true,
-            guideFeedback: "This is exactly how you protect a board legally. A fairness opinion from an independent party, combined with a documented analytical framework comparing the bids, creates a defensible record. The board can show they exercised proper judgment.",
+            guideFeedback: "The 'pop' is important psychology. $21 is the perfect middle ground.",
           },
           {
-            label: "Don't worry about lawsuits. Shareholders won't actually sue over a few hundred million.",
+            label: "Fine, we cancel the IPO.",
             isCorrect: false,
-            guideFeedback: "Shareholder lawsuits are extremely common in M&A. Turning down a nominally higher bid is one of the top triggers. The board needs documented protection — a fairness opinion and rigorous comparative analysis — not your personal reassurance.",
-          },
-          {
-            label: "Let's just accept both offers and see which one actually closes.",
-            isCorrect: false,
-            guideFeedback: "You can't accept two acquisition offers simultaneously. That would be a breach of fiduciary duty and contractual obligations. Exclusive dealing is typically required once you sign a definitive agreement. This would create legal chaos.",
-          },
-        ],
-      },
-      {
-        dialogue: [
-          { speaker: "client", text: "Okay, the analysis is compelling. But can we use Meridian's bid to squeeze more from Apex? I want to get the absolute best outcome for my shareholders." },
-        ],
-        choices: [
-          {
-            label: "Absolutely. We'll go back to Apex with a 'last look' — informing them of a competing superior proposal and giving them 48 hours to improve their terms. We should ask for an increase to $5.65B all-cash with the same clean closing conditions. This uses competitive tension without blowing up the Apex deal.",
-            isCorrect: true,
-            guideFeedback: "Perfect execution. The 'last look' or 'go-shop' mechanism is a standard M&A tool. You leveraged the competing bid to extract more value from the preferred buyer while maintaining the deal structure you want. This is how senior bankers maximize shareholder value.",
-          },
-          {
-            label: "Let's start a full auction process between the two bidders and drag it out to get the highest price.",
-            isCorrect: false,
-            guideFeedback: "A full re-auction 48 hours before signing would signal chaos and desperation. Apex might walk away entirely. Meridian might lower their bid. Deal fatigue is real — the longer you drag out a process, the more likely both buyers reconsider. A targeted 'last look' is far more effective.",
-          },
-          {
-            label: "No, let's not get greedy. We have a good deal with Apex. Let's just sign and move on.",
-            isCorrect: false,
-            guideFeedback: "You have a fiduciary duty to maximize shareholder value. When a competing bid creates genuine leverage, not using it is actually a failure of your advisory obligation. You don't need to be 'greedy' — you need to be thorough and professional.",
+            guideFeedback: "Canceling the night before is a disaster. You have to find a solution.",
           },
         ],
       },
     ],
     successOutro: [
-      { speaker: "narrator", text: "Apex comes back with $5.65B all-cash, 45-day close, regulatory only. The board unanimously approves. Priya signs the definitive agreement. $5.65 billion in guaranteed cash — the best possible outcome." },
-      { speaker: "guide", text: "Masterfully handled. You turned a chaotic last-minute bid into leverage, protected the board legally, and delivered an extra $150M for shareholders. This is the kind of work that builds careers on Wall Street." },
+      { speaker: "narrator", text: "GreenPower prices at $21. The next morning, it opens at $24. Everyone wins." },
+      { speaker: "guide", text: "Perfect execution. You balanced the founder's needs with market reality." },
     ],
     failureOutro: [
-      { speaker: "narrator", text: "The deal collapses amid confusion. Apex walks away offended, Meridian withdraws their offer citing 'process concerns,' and NovaTech is left without a buyer. Priya's board is furious." },
-      { speaker: "guide", text: "When a last-minute bid arrives, you need to stay calm and analytical. Jumping at headlines, dismissing concerns, or creating chaos can destroy a deal that took months to build. Let's try another scenario." },
+      { speaker: "narrator", text: "You price at $24. The stock opens flat and then drops to $18 by lunch. Investors are furious." },
+      { speaker: "guide", text: "Greed killed the deal. You should have left some money on the table to ensure a successful debut." },
     ],
   },
 ]
