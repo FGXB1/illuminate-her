@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo } from "react"
-import { Grid, Environment, Cloud } from "@react-three/drei"
+import { Grid, Environment } from "@react-three/drei"
 
 // NYC-style background building with windows
 function NYCBuilding({ position, args, color, windowColor = "#fbbf24" }: {
@@ -20,8 +20,8 @@ function NYCBuilding({ position, args, color, windowColor = "#fbbf24" }: {
       for (let c = 0; c < cols; c++) {
         if (Math.random() > 0.15) { // Some windows dark
           wins.push([
-            -w/2 + 0.6 + c * (w / cols),
-            position[1] - h/2 + r * (h / (rows + 1))
+            position[0] - w / 2 + 0.6 + c * (w / cols),
+            position[1] - h / 2 + r * (h / (rows + 1))
           ])
         }
       }
@@ -37,7 +37,7 @@ function NYCBuilding({ position, args, color, windowColor = "#fbbf24" }: {
       </mesh>
       {/* Window lights on front face */}
       {windows.map((wp, i) => (
-        <mesh key={i} position={[wp[0], wp[1], position[2] + d/2 + 0.08]}>
+        <mesh key={i} position={[wp[0], wp[1], position[2] + d / 2 + 0.08]}>
           <planeGeometry args={[0.4, 0.5]} />
           <meshStandardMaterial
             color={windowColor}
@@ -49,7 +49,7 @@ function NYCBuilding({ position, args, color, windowColor = "#fbbf24" }: {
         </mesh>
       ))}
       {/* Roof trim */}
-      <mesh position={[position[0], position[1] + h/2, position[2]]}>
+      <mesh position={[position[0], position[1] + h / 2, position[2]]}>
         <boxGeometry args={[w + 0.2, 0.15, d + 0.2]} />
         <meshStandardMaterial color="#1e293b" />
       </mesh>
@@ -129,7 +129,7 @@ function TaxiCab({ position }: { position: [number, number, number] }) {
       </mesh>
       {/* Wheels */}
       {[[-0.35, 0.1, 0.5], [0.35, 0.1, 0.5], [-0.35, 0.1, -0.6], [0.35, 0.1, -0.6]].map((wp, i) => (
-        <mesh key={i} position={wp as [number, number, number]} rotation={[0, 0, Math.PI/2]}>
+        <mesh key={i} position={wp as [number, number, number]} rotation={[0, 0, Math.PI / 2]}>
           <cylinderGeometry args={[0.1, 0.1, 0.08, 8]} />
           <meshStandardMaterial color="#1a1a1a" />
         </mesh>
@@ -366,12 +366,6 @@ export function CityEnvironment() {
 
       {/* Environment */}
       <Environment preset="night" />
-
-      {/* Clouds */}
-      {/* @ts-expect-error Cloud props vary across drei versions */}
-      <Cloud opacity={0.3} speed={0.3} width={10} depth={1.5} segments={20} position={[0, 25, -50]} />
-      {/* @ts-expect-error Cloud props vary across drei versions */}
-      <Cloud opacity={0.2} speed={0.2} width={12} depth={2} segments={15} position={[15, 30, -100]} />
 
       {/* Fog effect */}
       <fog attach="fog" args={["#0a0a1a", 30, 180]} />
