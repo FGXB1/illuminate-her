@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component<{ fallback: React.ReactNode, childre
 }
 
 const TRACK_SCALE = 20; // Scale of the track visual
-const LAP_DISTANCE = 5000; // Meters in simulation
+const LAP_DISTANCE = 1600; // Matches gameLogic approx
 
 // Shared track points logic
 const TRACK_POINTS = [
